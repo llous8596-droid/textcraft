@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TextCraft — Vos textes pro générés par IA</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A0F;
+  --surface:#13131A;
+  --surface2:#1C1C26;
+  --border:#2A2A3A;
+  --accent:#7C6EFA;
+  --accent2:#FA6E9A;
+  --text:#F0F0F8;
+  --muted:#8888A8;
+  --green:#4EFAC8;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);z-index:100}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-badge{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--accent);color:var(--accent);font-weight:500}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn-nav{font-size:13px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-nav.pro{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.hero{padding:64px 32px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(124,110,250,.15) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;line-height:1.1;margin-bottom:16px}
+.hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:16px;max-width:480px;margin:0 auto 24px;line-height:1.7}
+.credit-bar{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--muted)}
+
+.main{max-width:860px;margin:0 auto;padding:24px 24px 80px}
+.limit-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:24px}
+.limit-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.limit-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.limit-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .6s ease}
+.limit-count{font-size:12px;font-weight:500;white-space:nowrap;color:var(--text)}
+
+.steps{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);padding:4px;border-radius:10px;border:1px solid var(--border)}
+.step-tab{flex:1;padding:9px;text-align:center;border-radius:7px;font-size:13px;font-weight:500;cursor:default;transition:all .2s;color:var(--muted)}
+.step-tab.active{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:16px}
+.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.card-title .num{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+
+label{display:block;font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+input,textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;resize:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+select option{background:var(--surface2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.pill{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.selected{background:rgba(124,110,250,.15);border-color:var(--accent);color:var(--accent)}
+.pill.tone:hover{border-color:var(--accent2);color:var(--accent2)}
+.pill.tone.selected{background:rgba(250,110,154,.15);border-color:var(--accent2);color:var(--accent2)}
+
+.btn-gen{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;letter-spacing:.02em;margin-top:8px}
+.btn-gen:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 32px rgba(124,110,250,.35)}
+.btn-gen:disabled{opacity:.5;cursor:not-allowed}
+
+.loading{text-align:center;padding:60px 24px;display:none}
+.loading.visible{display:block}
+.spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ls{font-size:14px;color:var(--muted);margin:8px 0;transition:color .3s,transform .3s}
+.ls.active{color:var(--accent);transform:translateX(4px)}
+
+.results-area{display:none}
+.results-area.visible{display:block}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.result-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:20px;background:rgba(124,110,250,.15);color:var(--accent);border:1px solid rgba(124,110,250,.3)}
+.btn-copy{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-copy:hover{border-color:var(--green);color:var(--green)}
+.result-text{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap}
+
+.pricing-teaser{background:linear-gradient(135deg,rgba(124,110,250,.08),rgba(250,110,154,.08));border:1px solid rgba(124,110,250,.3);border-radius:16px;padding:32px;text-align:center;margin-top:32px}
+.pricing-teaser h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+.pricing-teaser p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:480px;margin:0 auto}
+.plan{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:left}
+.plan.featured{border-color:var(--accent);border-width:1.5px}
+.plan-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:30px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:10px;line-height:1}
+.plan-price span{font-size:14px;color:var(--muted);font-weight:400}
+.plan-feat{font-size:12px;color:var(--muted);line-height:1.8}
+.btn-plan{margin-top:16px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-plan:hover{background:rgba(124,110,250,.15)}
+.btn-plan.filled{background:var(--accent);color:#fff}
+.btn-plan.filled:hover{opacity:.9}
+
+footer{text-align:center;padding:32px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--accent)}
+
+@media(max-width:600px){
+  nav{padding:14px 16px}
+  .hero{padding:40px 16px 32px}
+  .main{padding:16px 16px 60px}
+  .grid2{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .card{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">TextCraft</div>
+  <div class="nav-right">
+    <div class="nav-badge">Bêta</div>
+    <button class="btn-nav pro" onclick="scrollToPricing()">Passer Pro →</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Vos textes pro,<br><span>générés en 10 secondes</span></h1>
+  <p>Posts Instagram, emails clients, fiches produits — l'IA écrit à votre place. Conçu pour les artisans, commerçants et TPE.</p>
+  <div class="credit-bar">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+    <span id="credit-text">5 générations gratuites disponibles</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="limit-bar">
+    <span class="limit-label">Générations gratuites</span>
+    <div class="limit-track"><div class="limit-fill" id="limit-fill" style="width:100%"></div></div>
+    <span class="limit-count" id="limit-count">5 / 5</span>
+  </div>
+
+  <div class="steps">
+    <div class="step-tab active" id="tab1">1 — Votre business</div>
+    <div class="step-tab" id="tab2">2 — Génération</div>
+    <div class="step-tab" id="tab3">3 — Résultat</div>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div id="step1">
+    <div class="card">
+      <div class="card-title"><div class="num">1</div> Votre activité</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Nom du business</label>
+          <input type="text" id="biz-name" placeholder="Ex: Boulangerie Dupont">
+        </div>
+        <div class="field">
+          <label>Secteur</label>
+          <select id="biz-sector">
+            <option value="">Choisir...</option>
+            <option>Restaurant / Café</option>
+            <option>Boulangerie / Pâtisserie</option>
+            <option>Boutique de mode</option>
+            <option>Salon de coiffure / beauté</option>
+            <option>Artisan (plombier, électricien...)</option>
+            <option>Coach / Consultant</option>
+            <option>E-commerce</option>
+            <option>Immobilier</option>
+            <option>Santé / Bien-être</option>
+            <option>Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Description de votre activité</label>
+        <textarea id="biz-desc" rows="3" placeholder="Ex: Boulangerie artisanale depuis 1985, spécialisée dans les pains au levain et viennoiseries maison. Clientèle de quartier, ambiance familiale."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="num">2</div> Contenu à générer</div>
+      <div class="field">
+        <label>Type de contenu</label>
+        <div class="pills" id="formats">
+          <button class="pill selected" data-v="post_instagram">Post Instagram</button>
+          <button class="pill" data-v="email_client">Email client</button>
+          <button class="pill" data-v="fiche_produit">Fiche produit</button>
+          <button class="pill" data-v="bio_instagram">Bio Instagram</button>
+          <button class="pill" data-v="sms_promo">SMS promo</button>
+          <button class="pill" data-v="google_avis">Réponse avis Google</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ton de voix</label>
+        <div class="pills" id="tones">
+          <button class="pill tone selected" data-v="chaleureux">Chaleureux</button>
+          <button class="pill tone" data-v="professionnel">Professionnel</button>
+          <button class="pill tone" data-v="fun">Fun & décontracté</button>
+          <button class="pill tone" data-v="luxe">Haut de gamme</button>
+          <button class="pill tone" data-v="local">Proximité locale</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Sujet spécifique (optionnel)</label>
+        <input type="text" id="topic" placeholder="Ex: soldes d'été, nouvelle gamme, ouverture dimanche...">
+      </div>
+    </div>
+
+    <button class="btn-gen" id="btn-generate">✦ Générer mon contenu</button>
+  </div>
+
+  <!-- CHARGEMENT -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="ls active" id="ls1">Analyse de votre activité...</div>
+    <div class="ls" id="ls2">Rédaction du contenu...</div>
+    <div class="ls" id="ls3">Optimisation pour l'engagement...</div>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="results-area" id="results">
+    <div id="results-inner"></div>
+    <button class="btn-gen" style="margin-top:8px" onclick="resetForm()">✦ Générer un autre contenu</button>
+
+    <div class="pricing-teaser" id="pricing-section">
+      <h3>Passez à TextCraft Pro</h3>
+      <p>Arrêtez de passer des heures à rédiger. Générations illimitées, tous les formats, historique complet.</p>
+      <div class="pricing-grid">
+        <div class="plan">
+          <div class="plan-name" style="color:var(--muted)">Gratuit</div>
+          <div class="plan-price">0€ <span>/mois</span></div>
+          <div class="plan-feat">5 générations/mois<br>3 formats disponibles<br>Sans historique</div>
+          <button class="btn-plan">Plan actuel</button>
+        </div>
+        <div class="plan featured">
+          <div class="plan-name" style="color:var(--accent)">Pro ✦</div>
+          <div class="plan-price">9€ <span>/mois</span></div>
+          <div class="plan-feat">Générations illimitées<br>Tous les formats<br>Historique + export</div>
+          <button class="btn-plan filled" onclick="alert('Paiement Stripe à intégrer')">Commencer →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>TextCraft — Conçu pour les petites entreprises françaises &nbsp;·&nbsp; <a href="#">Mentions légales</a> &nbsp;·&nbsp; <a href="#">Contact</a></p>
+</footer>
+
+<script>
+const MAX_FREE = 5;
+let usedCredits = parseInt(localStorage.getItem('tc_credits') || '0');
+let selectedFormat = 'post_instagram';
+let selectedTone = 'chaleureux';
+
+const formatLabels = {
+  post_instagram: 'Post Instagram',
+  email_client: 'Email client',
+  fiche_produit: 'Fiche produit',
+  bio_instagram: 'Bio Instagram',
+  sms_promo: 'SMS promotionnel',
+  google_avis: 'Réponse avis Google'
+};
+
+function updateCreditBar() {
+  const remaining = Math.max(0, MAX_FREE - usedCredits);
+  const pct = (remaining / MAX_FREE) * 100;
+  document.getElementById('limit-fill').style.width = pct + '%';
+  document.getElementById('limit-count').textContent = remaining + ' / ' + MAX_FREE;
+  document.getElementById('credit-text').textContent = remaining + ' génération' + (remaining !== 1 ? 's' : '') + ' gratuite' + (remaining !== 1 ? 's' : '') + ' disponible' + (remaining !== 1 ? 's' : '');
+  if (remaining <= 1) document.getElementById('limit-fill').style.background = '#FA6E9A';
+}
+updateCreditBar();
+
+document.querySelectorAll('#formats .pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#formats .pill').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedFormat = btn.dataset.v;
+  });
+});
+document.querySelectorAll('#tones .pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#tones .pill').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedTone = btn.dataset.v;
+  });
+});
+
+document.getElementById('btn-generate').addEventListener('click', generate);
+
+async function generate() {
+  const name = document.getElementById('biz-name').value.trim();
+  const sector = document.getElementById('biz-sector').value;
+  const description = document.getElementById('biz-desc').value.trim();
+  const topic = document.getElementById('topic').value.trim();
+
+  if (!name || !sector || !description) {
+    alert('Merci de remplir le nom, le secteur et la description.');
+    return;
+  }
+  if (usedCredits >= MAX_FREE) {
+    scrollToPricing();
+    return;
+  }
+
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('tab2').classList.add('active');
+
+  let lsStep = 0;
+  const lsEls = ['ls1', 'ls2', 'ls3'];
+  const interval = setInterval(() => {
+    lsStep++;
+    if (lsStep < lsEls.length) document.getElementById(lsEls[lsStep]).classList.add('active');
+  }, 900);
+
+  try {
+    // Appel au backend /api/generate
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, sector, description, format: selectedFormat, tone: selectedTone, topic })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Erreur serveur ' + response.status);
+    }
+
+    const data = await response.json();
+    const text = data.text || '';
+
+    clearInterval(interval);
+    usedCredits++;
+    localStorage.setItem('tc_credits', usedCredits);
+    updateCreditBar();
+
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('tab2').textContent = '2 — Fait ✓';
+    document.getElementById('tab3').classList.add('active');
+
+    document.getElementById('results-inner').innerHTML = `
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-tag">${formatLabels[selectedFormat]}</span>
+          <button class="btn-copy" onclick="copyText(this)">Copier</button>
+        </div>
+        <div class="result-text">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      </div>`;
+    document.getElementById('results').classList.add('visible');
+
+  } catch(e) {
+    clearInterval(interval);
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('step1').style.display = 'block';
+    btn.disabled = false;
+    document.getElementById('tab2').textContent = '2 — Génération';
+    document.getElementById('tab2').classList.remove('active');
+    document.querySelectorAll('.ls').forEach(l => l.classList.remove('active'));
+    document.getElementById('ls1').classList.add('active');
+    alert('Erreur : ' + e.message);
+  }
+}
+
+function copyText(btn) {
+  const text = btn.closest('.result-card').querySelector('.result-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copié ✓';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Copier'; btn.style.color = ''; }, 2000);
+  });
+}
+
+function resetForm() {
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('results-inner').innerHTML = '';
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('btn-generate').disabled = false;
+  document.getElementById('tab2').textContent = '2 — Génération';
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active');
+    if (i === 0) t.classList.add('active');
+  });
+  document.querySelectorAll('.ls').forEach(l => l.classList.remove('active'));
+  document.getElementById('ls1').classList.add('active');
+  document.getElementById('topic').value = '';
+  if (usedCredits >= MAX_FREE) scrollToPricing();
+}
+
+function scrollToPricing() {
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results-inner').innerHTML = '';
+  document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
