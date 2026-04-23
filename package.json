@@ -1,0 +1,13 @@
+{
+  "name": "textcraft",
+  "version": "1.0.0",
+  "description": "Générateur de textes marketing IA pour TPE françaises",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
