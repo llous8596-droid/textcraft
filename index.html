@@ -11,27 +11,36 @@
 :root{--bg:#0A0A0F;--surface:#13131A;--surface2:#1C1C26;--border:#2A2A3A;--accent:#7C6EFA;--accent2:#FA6E9A;--text:#F0F0F8;--muted:#8888A8;--green:#4EFAC8;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* NAV */
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,15,0.95);backdrop-filter:blur(12px);z-index:100}
 .logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer}
 .nav-right{display:flex;align-items:center;gap:10px}
 .btn-nav{font-size:13px;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .btn-nav:hover{border-color:var(--accent);color:var(--accent)}
 .btn-nav.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-.btn-nav.primary:hover{opacity:.9}
 .user-badge{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--muted)}
 .user-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.user-badge .pro-tag{background:rgba(124,110,250,.2);color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.pro-tag{background:rgba(124,110,250,.2);color:var(--accent);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
 
-/* HERO */
 .hero{padding:60px 32px 44px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,rgba(124,110,250,.12) 0%,transparent 70%);pointer-events:none}
 .hero h1{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,54px);font-weight:800;line-height:1.1;margin-bottom:14px}
 .hero h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{color:var(--muted);font-size:16px;max-width:480px;margin:0 auto 24px;line-height:1.7}
 
-/* MAIN */
 .main{max-width:860px;margin:0 auto;padding:0 24px 80px}
+
+/* PROFILE BANNER */
+.profile-banner{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(78,250,200,.06);border:1px solid rgba(78,250,200,.2);border-radius:12px;margin-bottom:20px;animation:fadeUp .4s ease}
+.profile-banner-icon{font-size:20px;flex-shrink:0}
+.profile-banner-text{flex:1}
+.profile-banner-title{font-size:13px;font-weight:600;color:var(--green);margin-bottom:2px}
+.profile-banner-sub{font-size:12px;color:var(--muted)}
+.profile-banner-actions{display:flex;gap:8px}
+.btn-profile-edit{font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid rgba(78,250,200,.3);background:transparent;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-profile-edit:hover{background:rgba(78,250,200,.1)}
+.btn-profile-use{font-size:12px;padding:6px 12px;border-radius:6px;border:none;background:var(--green);color:#0A0A0F;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;transition:all .2s}
+.btn-profile-use:hover{opacity:.9}
+
 .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:16px}
 .card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .num{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
@@ -44,15 +53,21 @@ select option{background:var(--surface2)}
 .field{margin-bottom:18px}.field:last-child{margin-bottom:0}
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .pill{padding:7px 15px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
-.pill:hover,.pill.fmt:hover{border-color:var(--accent);color:var(--accent)}
-.pill.selected,.pill.fmt.selected{background:rgba(124,110,250,.15);border-color:var(--accent);color:var(--accent)}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.selected{background:rgba(124,110,250,.15);border-color:var(--accent);color:var(--accent)}
 .pill.tone:hover{border-color:var(--accent2);color:var(--accent2)}
 .pill.tone.selected{background:rgba(250,110,154,.15);border-color:var(--accent2);color:var(--accent2)}
+
+/* SAVE PROFILE CHECKBOX */
+.save-profile-row{display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px 14px;background:rgba(124,110,250,.06);border:1px solid rgba(124,110,250,.2);border-radius:8px;cursor:pointer}
+.save-profile-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.save-profile-row span{font-size:13px;color:var(--muted)}
+.save-profile-row span strong{color:var(--accent)}
+
 .btn-gen{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .25s;margin-top:8px}
 .btn-gen:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 32px rgba(124,110,250,.3)}
 .btn-gen:disabled{opacity:.5;cursor:not-allowed}
 
-/* LOADING */
 .loading{text-align:center;padding:60px 24px;display:none}
 .loading.visible{display:block}
 .spinner{width:38px;height:38px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
@@ -60,7 +75,6 @@ select option{background:var(--surface2)}
 .ls{font-size:14px;color:var(--muted);margin:8px 0;transition:color .3s,transform .3s}
 .ls.active{color:var(--accent);transform:translateX(4px)}
 
-/* RESULTS */
 .results-area{display:none}
 .results-area.visible{display:block}
 .result-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;animation:fadeUp .4s ease both}
@@ -71,7 +85,24 @@ select option{background:var(--surface2)}
 .btn-copy:hover{border-color:var(--green);color:var(--green)}
 .result-text{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap}
 
-/* MODAL OVERLAY */
+.credit-info{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:24px;font-size:13px}
+.credit-info .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.credit-info span{color:var(--muted)}
+
+.pricing-teaser{background:linear-gradient(135deg,rgba(124,110,250,.08),rgba(250,110,154,.08));border:1px solid rgba(124,110,250,.3);border-radius:16px;padding:32px;text-align:center;margin-top:32px}
+.pricing-teaser h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+.pricing-teaser p{color:var(--muted);font-size:14px;margin-bottom:24px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:480px;margin:0 auto}
+.plan{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:left}
+.plan.featured{border-color:var(--accent)}
+.plan-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:30px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:10px;line-height:1}
+.plan-price span{font-size:14px;color:var(--muted);font-weight:400}
+.plan-feat{font-size:12px;color:var(--muted);line-height:1.8}
+.btn-plan{margin-top:16px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-plan.filled{background:var(--accent);color:#fff}
+
+/* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-overlay.visible{opacity:1;pointer-events:all}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:420px;position:relative;transform:translateY(16px);transition:transform .25s}
@@ -86,30 +117,8 @@ select option{background:var(--surface2)}
 .modal-field label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px}
 .modal-err{font-size:13px;color:#FA6E9A;margin-bottom:12px;display:none}
 .modal-err.visible{display:block}
-.btn-modal{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px}
-.btn-modal:hover{opacity:.9}
+.btn-modal{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
 .btn-modal:disabled{opacity:.5;cursor:not-allowed}
-
-/* PRICING */
-.pricing-teaser{background:linear-gradient(135deg,rgba(124,110,250,.08),rgba(250,110,154,.08));border:1px solid rgba(124,110,250,.3);border-radius:16px;padding:32px;text-align:center;margin-top:32px}
-.pricing-teaser h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
-.pricing-teaser p{color:var(--muted);font-size:14px;margin-bottom:24px}
-.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:480px;margin:0 auto}
-.plan{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:left}
-.plan.featured{border-color:var(--accent)}
-.plan-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px}
-.plan-price{font-size:30px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:10px;line-height:1}
-.plan-price span{font-size:14px;color:var(--muted);font-weight:400}
-.plan-feat{font-size:12px;color:var(--muted);line-height:1.8}
-.btn-plan{margin-top:16px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
-.btn-plan.filled{background:var(--accent);color:#fff}
-.btn-plan.filled:hover{opacity:.9}
-
-/* CREDIT BAR */
-.credit-info{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:24px;font-size:13px}
-.credit-info .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
-.credit-info span{color:var(--muted)}
-.credit-info strong{color:var(--text)}
 
 footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
 @media(max-width:600px){nav{padding:14px 16px}.hero{padding:40px 16px 32px}.main{padding:0 16px 60px}.grid2{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}.card{padding:20px}}
@@ -127,13 +136,26 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 
 <div class="hero">
   <h1>Vos textes pro,<br><span>générés en 10 secondes</span></h1>
-  <p>Posts Instagram, emails clients, fiches produits — l'IA écrit à votre place. Conçu pour les artisans, commerçants et TPE françaises.</p>
+  <p>Posts Instagram, emails clients, fiches produits — l'IA écrit à votre place.</p>
 </div>
 
 <div class="main">
   <div class="credit-info" id="credit-info">
     <div class="dot"></div>
     <span id="credit-text">Connectez-vous pour utiliser vos <strong>5 générations gratuites</strong></span>
+  </div>
+
+  <!-- PROFILE BANNER (affiché si profil sauvegardé) -->
+  <div id="profile-banner" style="display:none" class="profile-banner">
+    <div class="profile-banner-icon">✦</div>
+    <div class="profile-banner-text">
+      <div class="profile-banner-title" id="profile-banner-title">Profil sauvegardé</div>
+      <div class="profile-banner-sub" id="profile-banner-sub">Vos infos sont mémorisées</div>
+    </div>
+    <div class="profile-banner-actions">
+      <button class="btn-profile-edit" onclick="editProfile()">Modifier</button>
+      <button class="btn-profile-use" onclick="loadProfile()">Utiliser ✓</button>
+    </div>
   </div>
 
   <div id="step1">
@@ -165,6 +187,16 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
         <label>Description de votre activité</label>
         <textarea id="biz-desc" rows="3" placeholder="Ex: Boulangerie artisanale depuis 1985, pains au levain et viennoiseries maison. Clientèle de quartier, ambiance familiale."></textarea>
       </div>
+      <div class="field">
+        <label>Infos supplémentaires (optionnel)</label>
+        <input type="text" id="biz-extra" placeholder="Ex: produits phares, valeurs, clientèle cible, promotions en cours...">
+      </div>
+
+      <!-- SAVE PROFILE TOGGLE -->
+      <label class="save-profile-row" id="save-profile-row" style="display:none">
+        <input type="checkbox" id="save-profile-check">
+        <span>💾 <strong>Mémoriser ce profil</strong> — plus besoin de remplir à chaque fois</span>
+      </label>
     </div>
 
     <div class="card">
@@ -172,17 +204,17 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="field">
         <label>Type de contenu</label>
         <div class="pills">
-          <button class="pill fmt selected" data-v="post_instagram">Post Instagram</button>
-          <button class="pill fmt" data-v="email_client">Email client</button>
-          <button class="pill fmt" data-v="fiche_produit">Fiche produit</button>
-          <button class="pill fmt" data-v="bio_instagram">Bio Instagram</button>
-          <button class="pill fmt" data-v="sms_promo">SMS promo</button>
-          <button class="pill fmt" data-v="google_avis">Réponse avis Google</button>
+          <button class="pill selected" data-v="post_instagram">Post Instagram</button>
+          <button class="pill" data-v="email_client">Email client</button>
+          <button class="pill" data-v="fiche_produit">Fiche produit</button>
+          <button class="pill" data-v="bio_instagram">Bio Instagram</button>
+          <button class="pill" data-v="sms_promo">SMS promo</button>
+          <button class="pill" data-v="google_avis">Réponse avis Google</button>
         </div>
       </div>
       <div class="field">
         <label>Ton de voix</label>
-        <div class="pills">
+        <div class="pills" id="tones-container">
           <button class="pill tone selected" data-v="chaleureux">Chaleureux</button>
           <button class="pill tone" data-v="professionnel">Professionnel</button>
           <button class="pill tone" data-v="fun">Fun & décontracté</button>
@@ -209,14 +241,14 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   <div class="results-area" id="results">
     <div id="results-inner"></div>
     <button class="btn-gen" style="margin-top:8px" onclick="resetForm()">✦ Générer un autre contenu</button>
-    <div class="pricing-teaser" id="pricing-section">
+    <div class="pricing-teaser">
       <h3>Passez à TextCraft Pro</h3>
-      <p>Arrêtez de passer des heures à rédiger. Générations illimitées, tous les formats.</p>
+      <p>Générations illimitées, profil mémorisé, tous les formats.</p>
       <div class="pricing-grid">
         <div class="plan">
           <div class="plan-name" style="color:var(--muted)">Gratuit</div>
           <div class="plan-price">0€ <span>/mois</span></div>
-          <div class="plan-feat">5 générations/mois<br>Tous les formats<br>Sans historique</div>
+          <div class="plan-feat">5 générations/mois<br>Tous les formats<br>Profil sauvegardé</div>
           <button class="btn-plan">Plan actuel</button>
         </div>
         <div class="plan featured">
@@ -263,11 +295,11 @@ let currentUser = null;
 let authToken = localStorage.getItem('tc_token') || null;
 let modalMode = 'register';
 
-// Init
 window.addEventListener('DOMContentLoaded', () => {
   if (authToken) loadUser();
-  document.querySelectorAll('.pill.fmt').forEach(btn => btn.addEventListener('click', () => {
-    document.querySelectorAll('.pill.fmt').forEach(b => b.classList.remove('selected'));
+
+  document.querySelectorAll('.pill:not(.tone)').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('.pill:not(.tone)').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected'); selectedFormat = btn.dataset.v;
   }));
   document.querySelectorAll('.pill.tone').forEach(btn => btn.addEventListener('click', () => {
@@ -275,7 +307,6 @@ window.addEventListener('DOMContentLoaded', () => {
     btn.classList.add('selected'); selectedTone = btn.dataset.v;
   }));
   document.getElementById('btn-generate').addEventListener('click', generate);
-  document.getElementById('auth-email').addEventListener('keydown', e => e.key === 'Enter' && document.getElementById('auth-password').focus());
   document.getElementById('auth-password').addEventListener('keydown', e => e.key === 'Enter' && submitAuth());
 });
 
@@ -285,50 +316,80 @@ async function loadUser() {
     if (!res.ok) { authToken = null; localStorage.removeItem('tc_token'); updateNavGuest(); return; }
     currentUser = await res.json();
     updateNavUser();
+    if (currentUser.profile) showProfileBanner(currentUser.profile);
   } catch { updateNavGuest(); }
 }
 
 function updateNavUser() {
-  const nr = document.getElementById('nav-right');
   const isPro = currentUser?.plan === 'pro';
-  nr.innerHTML = `
+  document.getElementById('nav-right').innerHTML = `
     <div class="user-badge">
       <div class="dot"></div>
       <span>${currentUser.email.split('@')[0]}</span>
       ${isPro ? '<span class="pro-tag">PRO</span>' : ''}
     </div>
-    <button class="btn-nav" onclick="logout()">Déconnexion</button>
-  `;
+    <button class="btn-nav" onclick="logout()">Déconnexion</button>`;
   const remaining = isPro ? '∞' : (currentUser.credits ?? 5);
   document.getElementById('credit-text').innerHTML = isPro
     ? '<strong style="color:var(--accent)">Pro ✦</strong> — générations illimitées'
     : `Crédits restants : <strong>${remaining} / 5</strong>`;
+  // Afficher le checkbox de sauvegarde
+  document.getElementById('save-profile-row').style.display = 'flex';
 }
 
 function updateNavGuest() {
   document.getElementById('nav-right').innerHTML = `
     <button class="btn-nav" onclick="openModal('login')">Connexion</button>
-    <button class="btn-nav primary" onclick="openModal('register')">Créer un compte</button>
-  `;
+    <button class="btn-nav primary" onclick="openModal('register')">Créer un compte</button>`;
   document.getElementById('credit-text').innerHTML = `Connectez-vous pour utiliser vos <strong>5 générations gratuites</strong>`;
+}
+
+function showProfileBanner(profile) {
+  document.getElementById('profile-banner').style.display = 'flex';
+  document.getElementById('profile-banner-title').textContent = profile.name + ' — ' + profile.sector;
+  document.getElementById('profile-banner-sub').textContent = profile.description.slice(0, 60) + (profile.description.length > 60 ? '...' : '');
+}
+
+function loadProfile() {
+  if (!currentUser?.profile) return;
+  const p = currentUser.profile;
+  document.getElementById('biz-name').value = p.name;
+  document.getElementById('biz-sector').value = p.sector;
+  document.getElementById('biz-desc').value = p.description;
+  document.getElementById('biz-extra').value = p.extra || '';
+  // Set tone
+  document.querySelectorAll('.pill.tone').forEach(b => b.classList.remove('selected'));
+  const toneBtn = document.querySelector(`.pill.tone[data-v="${p.tone}"]`);
+  if (toneBtn) { toneBtn.classList.add('selected'); selectedTone = p.tone; }
+  // Flash confirmation
+  const banner = document.getElementById('profile-banner');
+  banner.style.background = 'rgba(78,250,200,.12)';
+  setTimeout(() => banner.style.background = '', 600);
+}
+
+function editProfile() {
+  loadProfile();
+  document.getElementById('profile-banner').style.display = 'none';
+  document.getElementById('save-profile-check').checked = true;
+  document.getElementById('biz-name').focus();
 }
 
 function logout() {
   authToken = null; currentUser = null;
   localStorage.removeItem('tc_token');
   updateNavGuest();
+  document.getElementById('profile-banner').style.display = 'none';
+  document.getElementById('save-profile-row').style.display = 'none';
 }
 
 // MODAL
 function openModal(mode) {
-  modalMode = mode;
-  switchTab(mode);
+  modalMode = mode; switchTab(mode);
   document.getElementById('modal-overlay').classList.add('visible');
   setTimeout(() => document.getElementById('auth-email').focus(), 200);
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('visible'); }
 function closeModalOutside(e) { if (e.target.id === 'modal-overlay') closeModal(); }
-
 function switchTab(mode) {
   modalMode = mode;
   document.getElementById('tab-register').classList.toggle('active', mode === 'register');
@@ -343,49 +404,40 @@ async function submitAuth() {
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
   const btn = document.getElementById('btn-auth');
-  const errEl = document.getElementById('modal-err');
-
   if (!email || !password) { showModalErr('Remplis tous les champs.'); return; }
-
-  btn.disabled = true;
-  btn.textContent = 'Chargement...';
-  errEl.classList.remove('visible');
-
+  btn.disabled = true; btn.textContent = 'Chargement...';
   try {
     const res = await fetch(`/api/auth?action=${modalMode}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
     if (!res.ok) { showModalErr(data.error || 'Erreur'); return; }
-
-    authToken = data.token;
-    currentUser = data.user;
+    authToken = data.token; currentUser = data.user;
     localStorage.setItem('tc_token', authToken);
-    closeModal();
-    updateNavUser();
-  } catch { showModalErr('Erreur de connexion. Réessaie.'); }
+    closeModal(); updateNavUser();
+    if (currentUser.profile) showProfileBanner(currentUser.profile);
+  } catch { showModalErr('Erreur de connexion.'); }
   finally { btn.disabled = false; btn.textContent = modalMode === 'register' ? 'Créer mon compte' : 'Se connecter'; }
 }
-
-function showModalErr(msg) {
-  const el = document.getElementById('modal-err');
-  el.textContent = msg;
-  el.classList.add('visible');
-}
+function showModalErr(msg) { const el = document.getElementById('modal-err'); el.textContent = msg; el.classList.add('visible'); }
 
 // GENERATE
 async function generate() {
   if (!authToken) { openModal('register'); return; }
-
   const name = document.getElementById('biz-name').value.trim();
   const sector = document.getElementById('biz-sector').value;
   const description = document.getElementById('biz-desc').value.trim();
   const topic = document.getElementById('topic').value.trim();
-
   if (!name || !sector || !description) { alert('Merci de remplir le nom, le secteur et la description.'); return; }
   if (currentUser?.plan !== 'pro' && (currentUser?.credits ?? 5) <= 0) { scrollToPricing(); return; }
+
+  // Sauvegarder le profil si coché
+  const saveCheck = document.getElementById('save-profile-check');
+  if (saveCheck?.checked) {
+    const extra = document.getElementById('biz-extra').value.trim();
+    await saveProfile(name, sector, description, selectedTone, extra);
+  }
 
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
@@ -405,18 +457,11 @@ async function generate() {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
       body: JSON.stringify({ name, sector, description, format: selectedFormat, tone: selectedTone, topic })
     });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || 'Erreur serveur');
-    }
-
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || 'Erreur serveur'); }
     const data = await res.json();
     clearInterval(interval);
-
     if (currentUser && data.credits !== null) currentUser.credits = data.credits;
-    if (currentUser) updateNavUser();
-
+    updateNavUser();
     document.getElementById('loading').classList.remove('visible');
     document.getElementById('results-inner').innerHTML = `
       <div class="result-card">
@@ -427,7 +472,6 @@ async function generate() {
         <div class="result-text">${data.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
       </div>`;
     document.getElementById('results').classList.add('visible');
-
   } catch(e) {
     clearInterval(interval);
     document.getElementById('loading').classList.remove('visible');
@@ -439,11 +483,24 @@ async function generate() {
   }
 }
 
+async function saveProfile(name, sector, description, tone, extra) {
+  try {
+    const res = await fetch('/api/auth?action=save-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      body: JSON.stringify({ name, sector, description, tone, extra })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (currentUser) { currentUser.profile = data.profile; showProfileBanner(data.profile); }
+    }
+  } catch(e) { console.error('Save profile error:', e); }
+}
+
 function copyText(btn) {
   const text = btn.closest('.result-card').querySelector('.result-text').innerText;
   navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'Copié ✓';
-    btn.style.color = 'var(--green)';
+    btn.textContent = 'Copié ✓'; btn.style.color = 'var(--green)';
     setTimeout(() => { btn.textContent = 'Copier'; btn.style.color = ''; }, 2000);
   });
 }
@@ -456,32 +513,25 @@ function resetForm() {
   document.querySelectorAll('.ls').forEach(l => l.classList.remove('active'));
   document.getElementById('ls1').classList.add('active');
   document.getElementById('topic').value = '';
+  if (currentUser?.profile) showProfileBanner(currentUser.profile);
 }
 
 function scrollToPricing() {
   document.getElementById('results').classList.add('visible');
   document.getElementById('results-inner').innerHTML = '';
-  document.getElementById('pricing-section').scrollIntoView({ behavior: 'smooth' });
+  document.querySelector('.pricing-teaser').scrollIntoView({ behavior: 'smooth' });
 }
 
 async function startCheckout() {
   if (!authToken) { openModal('register'); return; }
-  const btn = event.target;
-  btn.textContent = 'Chargement...';
-  btn.disabled = true;
   try {
     const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken }
     });
     const data = await res.json();
     if (data.url) window.location.href = data.url;
     else throw new Error(data.error || 'Erreur');
-  } catch(e) {
-    alert('Erreur paiement : ' + e.message);
-    btn.textContent = 'Commencer →';
-    btn.disabled = false;
-  }
+  } catch(e) { alert('Erreur paiement : ' + e.message); }
 }
 </script>
 </body>

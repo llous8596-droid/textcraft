@@ -1,6 +1,7 @@
 {
   "name": "textcraft",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "private": true,
-  "engines": { "node": ">=18" }
+  "type": "module",
+  "engines": { "node": "20.x" }
 }

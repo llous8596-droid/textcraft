@@ -51,12 +51,15 @@ export default async function handler(req, res) {
     local: 'ancré localement, proche des gens du quartier'
   };
 
+  // Enrichir le prompt avec les infos supplémentaires du profil sauvegardé
+  const profileExtra = user.profile?.extra ? `\n- Infos supplémentaires : ${user.profile.extra}` : '';
+
   const prompt = `Tu es un expert en marketing pour les petites entreprises françaises.
 
 Génère ${formatInstructions[format]} pour ce business :
 - Nom : ${name}
 - Secteur : ${sector}
-- Description : ${description}${topic ? '\n- Sujet/occasion : ' + topic : ''}
+- Description : ${description}${profileExtra}${topic ? '\n- Sujet/occasion : ' + topic : ''}
 - Ton : ${toneDesc[tone]}
 
 Réponds UNIQUEMENT avec le texte final prêt à l'emploi. Aucun commentaire, aucune introduction.`;
