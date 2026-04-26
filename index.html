@@ -184,6 +184,7 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   <button class="mode-btn active" id="mode-content" onclick="switchMode('content')"><span class="mode-icon">✦</span> Créer du contenu</button>
   <button class="mode-btn" id="mode-reputation" onclick="switchMode('reputation')"><span class="mode-icon">⭐</span> Réputation</button>
   <button class="mode-btn" id="mode-calendar" onclick="switchMode('calendar')"><span class="mode-icon">📅</span> Calendrier Pro</button>
+  <button class="mode-btn" id="mode-instagram" onclick="switchMode('instagram')"><span class="mode-icon">📊</span> Analyse Instagram</button>
 </div>
 
 <div class="main">
@@ -315,6 +316,43 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
     </div>
   </div>
 
+  <!-- ===== MODE INSTAGRAM ===== -->
+  <div id="page-instagram" style="display:none">
+    <div class="card">
+      <div class="card-title"><div class="num">1</div> Votre compte Instagram</div>
+      <div class="grid2">
+        <div class="field"><label>Compte Instagram</label><input type="text" id="ig-handle" placeholder="@votrecompte"></div>
+        <div class="field"><label>Nom du business</label><input type="text" id="ig-bizname" placeholder="Ex: Boulangerie Dupont"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Secteur</label><select id="ig-sector"><option value="">Choisir...</option><option>Restaurant / Café</option><option>Boulangerie / Pâtisserie</option><option>Boutique de mode</option><option>Salon de coiffure / beauté</option><option>Artisan</option><option>Coach / Consultant</option><option>E-commerce</option><option>Immobilier</option><option>Santé / Bien-être</option><option>Autre</option></select></div>
+        <div class="field"><label>Nombre d'abonnés</label><select id="ig-followers"><option value="">Je ne sais pas</option><option value="0-100">Moins de 100</option><option value="100-500">100 – 500</option><option value="500-1000">500 – 1 000</option><option value="1000-5000">1 000 – 5 000</option><option value="5000+">Plus de 5 000</option></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Fréquence de publication</label><select id="ig-freq"><option value="">Je ne sais pas</option><option value="1">1 fois par semaine</option><option value="2-3">2-3 fois par semaine</option><option value="4-5">4-5 fois par semaine</option><option value="quotidien">Tous les jours</option></select></div>
+        <div class="field"><label>Description (optionnel)</label><input type="text" id="ig-desc" placeholder="En quoi consiste votre activité ?"></div>
+      </div>
+      <div id="ig-profile-banner" style="display:none" class="profile-banner">
+        <div style="font-size:16px;flex-shrink:0">✦</div>
+        <div style="flex:1"><div class="profile-banner-title" id="igpb-title">Profil chargé</div></div>
+        <button class="btn-profile-use" onclick="loadProfileInstagram()">Utiliser ✓</button>
+      </div>
+    </div>
+    <button class="btn-gen" id="btn-instagram">📊 Analyser mon compte</button>
+    <div class="loading" id="loading-ig">
+      <div class="spinner"></div>
+      <div class="ls active">Analyse de votre secteur...</div>
+      <div class="ls" id="ls-ig2">Identification des meilleures pratiques...</div>
+      <div class="ls" id="ls-ig3">Génération des recommandations...</div>
+      <div class="ls" id="ls-ig4">Finalisation du rapport...</div>
+    </div>
+    <div class="results-area" id="results-ig">
+      <div id="results-ig-inner"></div>
+      <button class="btn-gen" style="margin-top:8px" onclick="resetInstagram()">📊 Analyser un autre compte</button>
+    </div>
+  </div>
+
+
 </div>
 
 <footer>TextCraft — Conçu pour les petites entreprises françaises</footer>
@@ -385,12 +423,13 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('btn-content').addEventListener('click',generateContent);
   document.getElementById('btn-reputation').addEventListener('click',generateReputation);
   document.getElementById('btn-calendar').addEventListener('click',generateCalendar);
+  document.getElementById('btn-instagram').addEventListener('click',generateInstagram);
   document.getElementById('auth-password').addEventListener('keydown',e=>e.key==='Enter'&&submitAuth());
   document.getElementById('cal-month').addEventListener('change',e=>calMonth=parseInt(e.target.value));
 });
 
 function switchMode(mode){
-  ['content','reputation','calendar'].forEach(m=>{
+  ['content','reputation','calendar','instagram'].forEach(m=>{
     document.getElementById('page-'+m).style.display=m===mode?'block':'none';
     document.getElementById('mode-'+m).classList.toggle('active',m===mode);
   });
@@ -429,6 +468,8 @@ async function loadUser(){
     currentUser=await res.json();updateNavUser();
     if(currentUser.profile){
       document.getElementById('pbc-wrap').style.display='flex';
+      document.getElementById('ig-profile-banner').style.display='flex';
+      document.getElementById('igpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;
       document.getElementById('pbc-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;
       document.getElementById('pbc-sub').textContent=currentUser.profile.description.slice(0,55)+'...';
     }
@@ -463,7 +504,9 @@ async function submitAuth(){
     const res=await fetch(`/api/auth?action=${modalMode}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
     const data=await res.json();if(!res.ok){showModalErr(data.error||'Erreur');return;}
     authToken=data.token;currentUser=data.user;localStorage.setItem('tc_token',authToken);closeModal();updateNavUser();
-    if(currentUser.profile){document.getElementById('pbc-wrap').style.display='flex';document.getElementById('pbc-title').textContent=currentUser.profile.name;}
+    if(currentUser.profile){document.getElementById('pbc-wrap').style.display='flex';
+      document.getElementById('ig-profile-banner').style.display='flex';
+      document.getElementById('igpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;document.getElementById('pbc-title').textContent=currentUser.profile.name;}
   }catch{showModalErr('Erreur de connexion.');}
   finally{btn.disabled=false;btn.textContent=modalMode==='register'?'Créer mon compte':'Se connecter';}
 }
@@ -584,6 +627,96 @@ function resetCalendar(){document.getElementById('cal-result').style.display='no
 async function saveProfile(name,sector,description,tone,extra){
   try{const res=await fetch('/api/auth?action=save-profile',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,tone,extra})});if(res.ok){const data=await res.json();if(currentUser)currentUser.profile=data.profile;}}catch(e){console.error(e);}
 }
+
+function loadProfileInstagram(){if(!currentUser?.profile)return;const p=currentUser.profile;document.getElementById('ig-bizname').value=p.name;document.getElementById('ig-sector').value=p.sector;document.getElementById('ig-desc').value=p.description||'';}
+function resetInstagram(){document.getElementById('results-ig').classList.remove('visible');document.getElementById('results-ig-inner').innerHTML='';document.getElementById('btn-instagram').style.display='block';document.getElementById('btn-instagram').disabled=false;document.querySelectorAll('.ls').forEach(l=>l.classList.remove('active'));}
+
+async function generateInstagram(){
+  if(!authToken){openModal('register');return;}
+  const handle=document.getElementById('ig-handle').value.trim();
+  const bizName=document.getElementById('ig-bizname').value.trim();
+  const sector=document.getElementById('ig-sector').value;
+  const description=document.getElementById('ig-desc').value.trim();
+  const followers=document.getElementById('ig-followers').value;
+  const postsPerWeek=document.getElementById('ig-freq').value;
+  if(!handle||!sector){alert('Merci de renseigner le compte Instagram et le secteur.');return;}
+  if(currentUser?.plan!=='pro'&&(currentUser?.credits??5)<=0){return;}
+  const btn=document.getElementById('btn-instagram');btn.disabled=true;btn.style.display='none';
+  document.getElementById('loading-ig').classList.add('visible');
+  let lsStep=0;const interval=setInterval(()=>{lsStep++;const el=document.getElementById('ls-ig'+(lsStep+1));if(el)el.classList.add('active');},900);
+  try{
+    const res=await fetch('/api/instagram',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({handle,bizName,sector,description,followers,postsPerWeek})});
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Erreur');}
+    const data=await res.json();clearInterval(interval);
+    if(currentUser&&data.credits!==null){currentUser.credits=data.credits;updateNavUser();}
+    document.getElementById('loading-ig').classList.remove('visible');
+    renderInstagramReport(data.analysis, handle);
+    document.getElementById('results-ig').classList.add('visible');
+  }catch(e){
+    clearInterval(interval);
+    document.getElementById('loading-ig').classList.remove('visible');
+    btn.disabled=false;btn.style.display='block';
+    alert('Erreur : '+e.message);
+  }
+}
+
+function renderInstagramReport(a, handle){
+  const scoreColor = a.score_color==='green'?'#4EFAC8':a.score_color==='orange'?'#FAA06E':'#FA6E9A';
+  const impactColors = {'Fort':'#FA6E9A','Moyen':'#FAA06E','Faible':'#8888A8'};
+  document.getElementById('results-ig-inner').innerHTML = `
+    <div class="result-card" style="animation-delay:.0s">
+      <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-family:Syne,sans-serif;font-size:52px;font-weight:800;color:${scoreColor};line-height:1">${a.score}</div>
+          <div style="font-size:11px;color:#8888A8;text-transform:uppercase;letter-spacing:.06em">/100</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;margin-bottom:6px">@${handle.replace('@','')}</div>
+          <div style="display:inline-block;padding:4px 12px;border-radius:20px;border:1px solid ${scoreColor};color:${scoreColor};font-size:12px;font-weight:600;margin-bottom:8px">${a.score_label}</div>
+          <div style="font-size:14px;color:#8888A8;line-height:1.6">${a.summary}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card" style="animation-delay:.1s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px"><span style="color:#4EFAC8">✓</span> Points forts</div>
+      ${a.strengths.map(s=>`<div style="padding:12px;background:#1C1C26;border-radius:8px;margin-bottom:8px"><div style="font-size:13px;font-weight:600;color:#F0F0F8;margin-bottom:4px">${s.title}</div><div style="font-size:13px;color:#8888A8;line-height:1.6">${s.detail}</div></div>`).join('')}
+    </div>
+
+    <div class="result-card" style="animation-delay:.2s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px"><span style="color:#FA6E9A">↑</span> Améliorations prioritaires</div>
+      ${a.improvements.map(i=>`<div style="padding:12px;background:#1C1C26;border-radius:8px;margin-bottom:8px;border-left:2px solid ${impactColors[i.impact]||'#2A2A3A'}"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:13px;font-weight:600;color:#F0F0F8">${i.title}</div><span style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,0,0,.3);color:${impactColors[i.impact]||'#8888A8'}">${i.impact}</span></div><div style="font-size:13px;color:#8888A8;line-height:1.6">${i.detail}</div></div>`).join('')}
+    </div>
+
+    <div class="result-card" style="animation-delay:.3s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:16px">⚡ Actions immédiates</div>
+      ${a.quick_wins.map((q,i)=>`<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #2A2A3A"><div style="width:22px;height:22px;border-radius:50%;background:rgba(124,110,250,.2);color:#7C6EFA;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${i+1}</div><div style="font-size:13px;color:#F0F0F8;line-height:1.6;padding-top:2px">${q}</div></div>`).join('')}
+    </div>
+
+    <div class="result-card" style="animation-delay:.4s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">📅 Stratégie de publication</div>
+      <div style="font-size:12px;color:#8888A8;margin-bottom:16px">${a.content_strategy.frequency}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="padding:12px;background:#1C1C26;border-radius:8px"><div style="font-size:11px;color:#8888A8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Meilleurs jours</div><div style="font-size:13px;color:#F0F0F8">${a.content_strategy.best_days.join(', ')}</div></div>
+        <div style="padding:12px;background:#1C1C26;border-radius:8px"><div style="font-size:11px;color:#8888A8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Meilleures heures</div><div style="font-size:13px;color:#F0F0F8">${a.content_strategy.best_times}</div></div>
+      </div>
+      <div style="font-size:12px;color:#8888A8;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Formats recommandés</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${a.content_strategy.formats.map(f=>`<span style="padding:5px 12px;border-radius:20px;background:rgba(124,110,250,.1);border:1px solid rgba(124,110,250,.3);color:#7C6EFA;font-size:12px">${f}</span>`).join('')}</div>
+    </div>
+
+    <div class="result-card" style="animation-delay:.5s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">#️⃣ Stratégie Hashtags</div>
+      <div style="font-size:13px;color:#8888A8;margin-bottom:12px;line-height:1.6">${a.hashtag_strategy.tip}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${a.hashtag_strategy.recommended.map(h=>`<span style="padding:5px 12px;border-radius:20px;background:#1C1C26;border:1px solid #2A2A3A;color:#F0F0F8;font-size:13px">${h}</span>`).join('')}</div>
+    </div>
+
+    <div class="result-card" style="animation-delay:.6s">
+      <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:16px">💡 Idées de contenu pour votre secteur</div>
+      ${a.content_ideas.map(c=>`<div style="padding:14px;background:#1C1C26;border-radius:8px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:13px;font-weight:600;color:#F0F0F8">${c.theme}</div><span style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(124,110,250,.15);color:#7C6EFA;border:1px solid rgba(124,110,250,.3)">${c.format}</span></div><div style="font-size:12px;color:#8888A8;line-height:1.5">${c.why}</div></div>`).join('')}
+    </div>
+  `;
+}
+
 async function startCheckout(){
   if(!authToken){openModal('register');return;}
   try{const res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken}});const data=await res.json();if(data.url)window.location.href=data.url;else throw new Error(data.error||'Erreur');}catch(e){alert('Erreur paiement : '+e.message);}
