@@ -161,6 +161,12 @@ select option{background:var(--surface2)}
 .btn-plan{margin-top:14px;width:100%;padding:10px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
 .btn-plan.filled{background:var(--accent);color:#fff}
 
+
+.verified-banner{display:none;align-items:center;gap:12px;padding:14px 18px;background:rgba(78,250,200,.08);border:1px solid rgba(78,250,200,.3);border-radius:12px;margin-bottom:20px;animation:fadeUp .4s ease}
+.verified-banner.visible{display:flex}
+.pending-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;text-align:center;max-width:480px;margin:0 auto}
+.pending-box h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:10px}
+.pending-box p{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px}
 footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
 @media(max-width:640px){
   nav{padding:14px 16px}.main{padding:16px 16px 60px}.grid2,.grid3{grid-template-columns:1fr}
@@ -188,6 +194,14 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 </div>
 
 <div class="main">
+
+  <div class="verified-banner" id="verified-banner">
+    <span style="font-size:20px">✅</span>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--green)">Email confirmé !</div>
+      <div style="font-size:12px;color:var(--muted)">Votre compte est actif. Connectez-vous pour commencer.</div>
+    </div>
+  </div>
   <div class="credit-info" id="credit-info">
     <div class="dot"></div>
     <span id="credit-text">Connectez-vous pour utiliser vos <strong>5 générations gratuites</strong></span>
@@ -395,6 +409,7 @@ let calPosts=[], calMonth=0, calYear=new Date().getFullYear();
 
 window.addEventListener('DOMContentLoaded',()=>{
   if(authToken) loadUser();
+  checkVerifiedParam();
   // Set current month
   const now = new Date();
   calMonth = now.getMonth();
@@ -715,6 +730,40 @@ function renderInstagramReport(a, handle){
       ${a.content_ideas.map(c=>`<div style="padding:14px;background:#1C1C26;border-radius:8px;margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:13px;font-weight:600;color:#F0F0F8">${c.theme}</div><span style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(124,110,250,.15);color:#7C6EFA;border:1px solid rgba(124,110,250,.3)">${c.format}</span></div><div style="font-size:12px;color:#8888A8;line-height:1.5">${c.why}</div></div>`).join('')}
     </div>
   `;
+}
+
+
+function showPendingModal(email){
+  document.getElementById('modal-overlay').innerHTML = `
+    <div class="modal">
+      <div class="pending-box">
+        <div style="font-size:48px;margin-bottom:16px">📧</div>
+        <h3>Vérifiez votre email</h3>
+        <p>Un email de confirmation a été envoyé à <strong>${email}</strong>. Cliquez sur le lien dans l'email pour activer votre compte.</p>
+        <p style="font-size:12px;color:var(--muted)">Pensez à vérifier vos spams.</p>
+        <button class="btn-gen" style="max-width:280px;margin:0 auto;font-size:14px" onclick="resendVerify('${email}')">Renvoyer l'email</button>
+        <button class="btn-nav" style="margin-top:10px;width:100%;justify-content:center" onclick="closeModal()">Fermer</button>
+      </div>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+
+async function resendVerify(email){
+  try{
+    const res = await fetch('/api/auth?action=resend-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data = await res.json();
+    if(res.ok) alert('Email renvoyé ! Vérifiez votre boîte mail.');
+    else alert(data.error || 'Erreur');
+  }catch{alert('Erreur de connexion.');}
+}
+
+function checkVerifiedParam(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('verified')==='true'){
+    document.getElementById('verified-banner').classList.add('visible');
+    openModal('login');
+    window.history.replaceState({}, '', '/');
+  }
 }
 
 async function startCheckout(){

@@ -21,6 +21,53 @@ function verifyJWT(token, secret) {
   } catch { return null; }
 }
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sendVerificationEmail(email, token) {
+  const appUrl = process.env.APP_URL || 'https://textcraft-sigma.vercel.app';
+  const verifyUrl = `${appUrl}/api/auth?action=verify&token=${token}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0A0A0F;font-family:sans-serif">
+  <div style="max-width:480px;margin:40px auto;padding:0 20px">
+    <div style="background:#13131A;border:1px solid #2A2A3A;border-radius:16px;padding:40px;text-align:center">
+      <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#7C6EFA,#FA6E9A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px">TextCraft ✦</div>
+      <h1 style="color:#F0F0F8;font-size:22px;font-weight:700;margin:20px 0 10px">Confirmez votre email</h1>
+      <p style="color:#8888A8;font-size:15px;line-height:1.7;margin-bottom:32px">Cliquez sur le bouton ci-dessous pour activer votre compte TextCraft et accéder à vos 5 générations gratuites.</p>
+      <a href="${verifyUrl}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#7C6EFA,#FA6E9A);border-radius:10px;color:#fff;font-weight:700;font-size:16px;text-decoration:none">Confirmer mon email →</a>
+      <p style="color:#8888A8;font-size:12px;margin-top:24px">Ce lien expire dans 24h. Si vous n'avez pas créé de compte, ignorez cet email.</p>
+    </div>
+    <p style="color:#2A2A3A;font-size:11px;text-align:center;margin-top:16px">TextCraft — ${appUrl}</p>
+  </div>
+</body>
+</html>`;
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: 'TextCraft <onboarding@resend.dev>',
+      to: [email],
+      subject: 'Confirmez votre email TextCraft ✦',
+      html
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error('Erreur envoi email : ' + (err.message || res.status));
+  }
+  return true;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
@@ -34,26 +81,87 @@ export default async function handler(req, res) {
   if (action === 'register' && req.method === 'POST') {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+    if (!isValidEmail(email)) return res.status(400).json({ error: 'Adresse email invalide' });
     if (password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (6 caractères min)' });
+
     const id = email.toLowerCase().trim();
     const existing = await kvGet(`user:${id}`);
-    if (existing) return res.status(409).json({ error: 'Email déjà utilisé' });
+    if (existing && existing.verified) return res.status(409).json({ error: 'Email déjà utilisé' });
+
     const hash = crypto.createHash('sha256').update(password + secret).digest('hex');
-    const user = { email: id, hash, plan: 'free', credits: 5, createdAt: Date.now(), profile: null };
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const verifyExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
+
+    const user = {
+      email: id, hash, plan: 'free', credits: 5,
+      createdAt: Date.now(), profile: null,
+      verified: false, verifyToken, verifyExpires
+    };
     await kvSet(`user:${id}`, user);
-    const token = signJWT({ email: id, plan: 'free' }, secret);
-    return res.status(200).json({ token, user: { email: id, plan: 'free', credits: 5, profile: null } });
+    await kvSet(`verify:${verifyToken}`, id);
+
+    try {
+      await sendVerificationEmail(id, verifyToken);
+    } catch(e) {
+      console.error('Email error:', e.message);
+      // On continue même si l'email échoue — on log mais on ne bloque pas
+    }
+
+    return res.status(200).json({
+      pending: true,
+      message: 'Un email de confirmation a été envoyé à ' + id + '. Vérifiez votre boîte mail.'
+    });
+  }
+
+  // VERIFY EMAIL
+  if (action === 'verify' && req.method === 'GET') {
+    const { token } = req.query;
+    if (!token) return res.status(400).send(errorPage('Token manquant'));
+
+    // Cherche l'utilisateur avec ce token
+    const appUrl = process.env.APP_URL || 'https://textcraft-sigma.vercel.app';
+
+    // On cherche dans KV — on doit scanner les clés
+    // On stocke aussi un index token→email pour la rapidité
+    const emailFromIndex = await kvGet(`verify:${token}`);
+    if (!emailFromIndex) return res.status(400).send(errorPage('Lien invalide ou expiré'));
+
+    const user = await kvGet(`user:${emailFromIndex}`);
+    if (!user) return res.status(400).send(errorPage('Utilisateur introuvable'));
+    if (user.verified) {
+      return res.redirect(302, `${appUrl}?verified=already`);
+    }
+    if (user.verifyToken !== token) return res.status(400).send(errorPage('Token invalide'));
+    if (Date.now() > user.verifyExpires) return res.status(400).send(errorPage('Lien expiré. Créez un nouveau compte.'));
+
+    user.verified = true;
+    user.verifyToken = null;
+    user.verifyExpires = null;
+    await kvSet(`user:${emailFromIndex}`, user);
+
+    return res.redirect(302, `${appUrl}?verified=true`);
   }
 
   // LOGIN
   if (action === 'login' && req.method === 'POST') {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+    if (!isValidEmail(email)) return res.status(400).json({ error: 'Adresse email invalide' });
+
     const id = email.toLowerCase().trim();
     const user = await kvGet(`user:${id}`);
     if (!user) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+
+    if (!user.verified) {
+      return res.status(403).json({
+        error: 'Email non confirmé. Vérifiez votre boîte mail.',
+        pending: true
+      });
+    }
+
     const hash = crypto.createHash('sha256').update(password + secret).digest('hex');
     if (hash !== user.hash) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+
     const token = signJWT({ email: id, plan: user.plan }, secret);
     return res.status(200).json({ token, user: { email: id, plan: user.plan, credits: user.credits, profile: user.profile || null } });
   }
@@ -82,5 +190,32 @@ export default async function handler(req, res) {
     return res.status(200).json({ profile: user.profile });
   }
 
+  // RESEND VERIFICATION
+  if (action === 'resend-verify' && req.method === 'POST') {
+    const { email } = req.body;
+    if (!email || !isValidEmail(email)) return res.status(400).json({ error: 'Email invalide' });
+    const id = email.toLowerCase().trim();
+    const user = await kvGet(`user:${id}`);
+    if (!user) return res.status(404).json({ error: 'Compte introuvable' });
+    if (user.verified) return res.status(400).json({ error: 'Email déjà vérifié' });
+
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    user.verifyToken = verifyToken;
+    user.verifyExpires = Date.now() + 24 * 60 * 60 * 1000;
+    await kvSet(`user:${id}`, user);
+    await kvSet(`verify:${verifyToken}`, id);
+
+    try {
+      await sendVerificationEmail(id, verifyToken);
+      return res.status(200).json({ message: 'Email renvoyé !' });
+    } catch(e) {
+      return res.status(500).json({ error: 'Erreur envoi email' });
+    }
+  }
+
   return res.status(404).json({ error: 'Action inconnue' });
+}
+
+function errorPage(msg) {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Erreur</title></head><body style="background:#0A0A0F;color:#F0F0F8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center"><div><div style="font-size:40px;margin-bottom:16px">⚠️</div><h2>${msg}</h2><a href="/" style="color:#7C6EFA;margin-top:16px;display:block">Retour à l'accueil</a></div></body></html>`;
 }
