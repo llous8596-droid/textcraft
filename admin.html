@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TextCraft Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0A0F;--surface:#13131A;--surface2:#1C1C26;--border:#2A2A3A;--accent:#7C6EFA;--accent2:#FA6E9A;--text:#F0F0F8;--muted:#8888A8;--green:#4EFAC8;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;padding:32px}
+h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box{max-width:360px;margin:80px auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center}
+.login-box h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:20px}
+input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;margin-bottom:12px}
+input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;margin-bottom:4px}
+.stat-label{font-size:13px;color:var(--muted)}
+.stat.green .stat-val{color:var(--green)}
+.stat.purple .stat-val{color:var(--accent)}
+.stat.pink .stat-val{color:var(--accent2)}
+.stat.orange .stat-val{color:#FAA06E}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+th{padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.pro{background:rgba(124,110,250,.2);color:var(--accent);border:1px solid rgba(124,110,250,.3)}
+.badge.free{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.badge.verified{background:rgba(78,250,200,.1);color:var(--green);border:1px solid rgba(78,250,200,.3)}
+.badge.unverified{background:rgba(250,110,154,.1);color:var(--accent2);border:1px solid rgba(250,110,154,.3)}
+.section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div id="login-area">
+  <div class="login-box">
+    <h2>🔐 Admin TextCraft</h2>
+    <input type="password" id="admin-secret" placeholder="Mot de passe admin">
+    <button class="btn" onclick="loadDashboard()">Accéder</button>
+    <div id="login-err" style="color:#FA6E9A;font-size:13px;margin-top:12px"></div>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none">
+  <h1>TextCraft Admin ✦</h1>
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="section-title">Utilisateurs récents</div>
+  <table>
+    <thead><tr><th>Email</th><th>Plan</th><th>Statut</th><th>Crédits</th><th>Profil</th><th>Inscrit le</th></tr></thead>
+    <tbody id="users-table"></tbody>
+  </table>
+</div>
+
+<script>
+let adminSecret = '';
+
+async function loadDashboard() {
+  adminSecret = document.getElementById('admin-secret').value;
+  if (!adminSecret) return;
+
+  try {
+    const res = await fetch('/api/admin', { headers: { 'x-admin-secret': adminSecret } });
+    if (!res.ok) { document.getElementById('login-err').textContent = 'Mot de passe incorrect'; return; }
+    const data = await res.json();
+
+    document.getElementById('login-area').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+
+    const s = data.stats;
+    document.getElementById('stats-grid').innerHTML = `
+      <div class="stat purple"><div class="stat-val">${s.total}</div><div class="stat-label">Utilisateurs total</div></div>
+      <div class="stat green"><div class="stat-val">${s.verified}</div><div class="stat-label">Emails vérifiés</div></div>
+      <div class="stat pink"><div class="stat-val">${s.pro}</div><div class="stat-label">Membres Pro</div></div>
+      <div class="stat orange"><div class="stat-val">${s.mrr}€</div><div class="stat-label">MRR estimé</div></div>
+      <div class="stat"><div class="stat-val">${s.newThisWeek}</div><div class="stat-label">Nouveaux cette semaine</div></div>
+    `;
+
+    document.getElementById('users-table').innerHTML = data.users.map(u => `
+      <tr>
+        <td>${u.email}</td>
+        <td><span class="badge ${u.plan}">${u.plan.toUpperCase()}</span></td>
+        <td><span class="badge ${u.verified ? 'verified' : 'unverified'}">${u.verified ? '✓ Vérifié' : '✗ Non vérifié'}</span></td>
+        <td>${u.credits === 999999 ? '∞' : u.credits}</td>
+        <td>${u.hasProfile ? '✓' : '—'}</td>
+        <td>${new Date(u.createdAt).toLocaleDateString('fr-FR')}</td>
+      </tr>
+    `).join('');
+
+  } catch(e) { document.getElementById('login-err').textContent = 'Erreur : ' + e.message; }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') loadDashboard(); });
+</script>
+</body>
+</html>
