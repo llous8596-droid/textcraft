@@ -213,6 +213,78 @@ export default async function handler(req, res) {
     }
   }
 
+
+  // FORGOT PASSWORD
+  if (action === 'forgot-password' && req.method === 'POST') {
+    const { email } = req.body;
+    if (!email || !isValidEmail(email)) return res.status(400).json({ error: 'Email invalide' });
+
+    const id = email.toLowerCase().trim();
+    const user = await kvGet(`user:${id}`);
+    if (!user) return res.status(200).json({ message: 'Si cet email existe, un lien a été envoyé.' }); // Don't reveal if user exists
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = Date.now() + 60 * 60 * 1000; // 1h
+
+    user.resetToken = resetToken;
+    user.resetExpires = resetExpires;
+    await kvSet(`user:${id}`, user);
+    await kvSet(`reset:${resetToken}`, id);
+
+    const appUrl = process.env.APP_URL || 'https://textcraft-sigma.vercel.app';
+    const resetUrl = `${appUrl}?reset_token=${resetToken}`;
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0A0A0F;font-family:sans-serif">
+  <div style="max-width:480px;margin:40px auto;padding:0 20px">
+    <div style="background:#13131A;border:1px solid #2A2A3A;border-radius:16px;padding:40px;text-align:center">
+      <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#7C6EFA,#FA6E9A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px">TextCraft ✦</div>
+      <h1 style="color:#F0F0F8;font-size:22px;font-weight:700;margin:20px 0 10px">Réinitialiser votre mot de passe</h1>
+      <p style="color:#8888A8;font-size:15px;line-height:1.7;margin-bottom:32px">Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien expire dans 1 heure.</p>
+      <a href="${resetUrl}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#7C6EFA,#FA6E9A);border-radius:10px;color:#fff;font-weight:700;font-size:16px;text-decoration:none">Réinitialiser mon mot de passe →</a>
+      <p style="color:#8888A8;font-size:12px;margin-top:24px">Si vous n'avez pas demandé cela, ignorez cet email.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: 'TextCraft <onboarding@resend.dev>', to: [id], subject: 'Réinitialisation de votre mot de passe TextCraft', html })
+      });
+    } catch(e) { console.error('Reset email error:', e); }
+
+    return res.status(200).json({ message: 'Si cet email existe, un lien a été envoyé.' });
+  }
+
+  // RESET PASSWORD
+  if (action === 'reset-password' && req.method === 'POST') {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ error: 'Champs manquants' });
+    if (newPassword.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (6 caractères min)' });
+
+    const emailFromIndex = await kvGet(`reset:${token}`);
+    if (!emailFromIndex) return res.status(400).json({ error: 'Lien invalide ou expiré' });
+
+    const user = await kvGet(`user:${emailFromIndex}`);
+    if (!user) return res.status(400).json({ error: 'Utilisateur introuvable' });
+    if (user.resetToken !== token) return res.status(400).json({ error: 'Token invalide' });
+    if (Date.now() > user.resetExpires) return res.status(400).json({ error: 'Lien expiré. Recommencez.' });
+
+    user.hash = crypto.createHash('sha256').update(newPassword + secret).digest('hex');
+    user.resetToken = null;
+    user.resetExpires = null;
+    await kvSet(`user:${emailFromIndex}`, user);
+    await kvSet(`reset:${token}`, null); // Invalidate token
+
+    return res.status(200).json({ ok: true, message: 'Mot de passe mis à jour. Connectez-vous !' });
+  }
+
   return res.status(404).json({ error: 'Action inconnue' });
 }
 

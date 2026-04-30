@@ -393,6 +393,7 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
     <div class="modal-tabs"><button class="modal-tab active" id="tab-register" onclick="switchTab('register')">Inscription</button><button class="modal-tab" id="tab-login" onclick="switchTab('login')">Connexion</button></div>
     <div class="modal-field"><label>Email</label><input type="email" id="auth-email" placeholder="votre@email.com"></div>
     <div class="modal-field"><label>Mot de passe</label><input type="password" id="auth-password" placeholder="6 caractères minimum"></div>
+    <div id="forgot-link" style="text-align:right;margin-top:-8px;margin-bottom:12px;display:none"><button onclick="showForgotForm()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Mot de passe oublié ?</button></div>
     <div class="modal-err" id="modal-err"></div>
     <button class="btn-modal" id="btn-auth" onclick="submitAuth()">Créer mon compte</button>
   </div>
@@ -410,6 +411,7 @@ let calPosts=[], calMonth=0, calYear=new Date().getFullYear();
 window.addEventListener('DOMContentLoaded',()=>{
   if(authToken) loadUser();
   checkVerifiedParam();
+  checkResetToken();
   // Set current month
   const now = new Date();
   calMonth = now.getMonth();
@@ -764,6 +766,93 @@ function checkVerifiedParam(){
     openModal('login');
     window.history.replaceState({}, '', '/');
   }
+}
+
+
+// ===== FORGOT PASSWORD =====
+function showForgotForm(){
+  document.getElementById('modal-overlay').innerHTML = `
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>Mot de passe oublié</h2>
+      <p>Entrez votre email, nous vous enverrons un lien de réinitialisation.</p>
+      <div class="modal-field"><label>Email</label><input type="email" id="forgot-email" placeholder="votre@email.com"></div>
+      <div class="modal-err" id="forgot-err"></div>
+      <button class="btn-modal" onclick="submitForgot()">Envoyer le lien →</button>
+      <div style="text-align:center;margin-top:12px"><button onclick="openModal('login')" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">← Retour à la connexion</button></div>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('visible');
+  setTimeout(()=>document.getElementById('forgot-email')?.focus(),200);
+}
+
+async function submitForgot(){
+  const email = document.getElementById('forgot-email')?.value.trim();
+  const errEl = document.getElementById('forgot-err');
+  if(!email){errEl.textContent='Entrez votre email.';errEl.classList.add('visible');return;}
+  const btn = document.querySelector('.btn-modal');
+  btn.disabled=true;btn.textContent='Envoi...';
+  try{
+    const res = await fetch('/api/auth?action=forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    const data = await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Erreur';errEl.classList.add('visible');return;}
+    document.getElementById('modal-overlay').innerHTML = `
+      <div class="modal" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">📧</div>
+        <h2 style="margin-bottom:10px">Email envoyé !</h2>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px">Si cet email existe dans notre base, vous recevrez un lien de réinitialisation. Vérifiez vos spams.</p>
+        <button class="btn-modal" onclick="openModal('login')">Retour à la connexion</button>
+      </div>`;
+    document.getElementById('modal-overlay').classList.add('visible');
+  }catch{errEl.textContent='Erreur de connexion.';errEl.classList.add('visible');}
+  finally{if(btn){btn.disabled=false;btn.textContent='Envoyer le lien →';}}
+}
+
+function checkResetToken(){
+  const params = new URLSearchParams(window.location.search);
+  const resetToken = params.get('reset_token');
+  if(resetToken){
+    window.history.replaceState({}, '', '/');
+    showResetForm(resetToken);
+  }
+}
+
+function showResetForm(token){
+  document.getElementById('modal-overlay').innerHTML = `
+    <div class="modal">
+      <h2>Nouveau mot de passe</h2>
+      <p>Choisissez votre nouveau mot de passe.</p>
+      <div class="modal-field"><label>Nouveau mot de passe</label><input type="password" id="reset-pwd" placeholder="Minimum 6 caractères"></div>
+      <div class="modal-field"><label>Confirmer le mot de passe</label><input type="password" id="reset-pwd2" placeholder="Répétez le mot de passe"></div>
+      <div class="modal-err" id="reset-err"></div>
+      <button class="btn-modal" onclick="submitReset('${token}')">Enregistrer le mot de passe →</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('visible');
+  setTimeout(()=>document.getElementById('reset-pwd')?.focus(),200);
+}
+
+async function submitReset(token){
+  const pwd = document.getElementById('reset-pwd')?.value;
+  const pwd2 = document.getElementById('reset-pwd2')?.value;
+  const errEl = document.getElementById('reset-err');
+  if(!pwd||!pwd2){errEl.textContent='Remplis les deux champs.';errEl.classList.add('visible');return;}
+  if(pwd!==pwd2){errEl.textContent='Les mots de passe ne correspondent pas.';errEl.classList.add('visible');return;}
+  const btn = document.querySelector('.btn-modal');
+  btn.disabled=true;btn.textContent='Enregistrement...';
+  try{
+    const res = await fetch('/api/auth?action=reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,newPassword:pwd})});
+    const data = await res.json();
+    if(!res.ok){errEl.textContent=data.error||'Erreur';errEl.classList.add('visible');return;}
+    closeModal();
+    // Show success banner
+    const banner = document.getElementById('verified-banner');
+    if(banner){
+      banner.querySelector('.profile-banner-title').textContent='Mot de passe mis à jour !';
+      banner.querySelector('.profile-banner-sub').textContent='Connectez-vous avec votre nouveau mot de passe.';
+      banner.classList.add('visible');
+    }
+    openModal('login');
+  }catch{errEl.textContent='Erreur de connexion.';errEl.classList.add('visible');}
+  finally{if(btn){btn.disabled=false;btn.textContent='Enregistrer le mot de passe →';}}
 }
 
 async function startCheckout(){
