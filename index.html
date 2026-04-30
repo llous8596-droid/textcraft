@@ -191,6 +191,9 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   <button class="mode-btn" id="mode-reputation" onclick="switchMode('reputation')"><span class="mode-icon">⭐</span> Réputation</button>
   <button class="mode-btn" id="mode-calendar" onclick="switchMode('calendar')"><span class="mode-icon">📅</span> Calendrier Pro</button>
   <button class="mode-btn" id="mode-instagram" onclick="switchMode('instagram')"><span class="mode-icon">📊</span> Analyse Instagram</button>
+  <button class="mode-btn" id="mode-suggestions" onclick="switchMode('suggestions')"><span class="mode-icon">💡</span> Idées de posts</button>
+  <button class="mode-btn" id="mode-history" onclick="switchMode('history')"><span class="mode-icon">🕐</span> Historique</button>
+  <button class="mode-btn" id="mode-account" onclick="switchMode('account')"><span class="mode-icon">👤</span> Mon compte</button>
 </div>
 
 <div class="main">
@@ -523,9 +526,11 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 function switchMode(mode){
-  ['content','reputation','calendar','instagram'].forEach(m=>{
-    document.getElementById('page-'+m).style.display=m===mode?'block':'none';
-    document.getElementById('mode-'+m).classList.toggle('active',m===mode);
+  ['content','reputation','calendar','instagram','suggestions','history','account'].forEach(m=>{
+    const page=document.getElementById('page-'+m);
+    const btn=document.getElementById('mode-'+m);
+    if(page) page.style.display=m===mode?'block':'none';
+    if(btn) btn.classList.toggle('active',m===mode);
   });
   if(mode==='calendar'){
     if(currentUser?.plan==='pro'){
