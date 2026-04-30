@@ -52,7 +52,7 @@ tr:hover td{background:var(--surface2)}
   <div class="stats-grid" id="stats-grid"></div>
   <div class="section-title">Utilisateurs récents</div>
   <table>
-    <thead><tr><th>Email</th><th>Plan</th><th>Statut</th><th>Crédits</th><th>Profil</th><th>Inscrit le</th></tr></thead>
+    <thead><tr><th>Email</th><th>Plan</th><th>Statut</th><th>Crédits</th><th>Profil</th><th>Inscrit le</th><th>Actions</th></tr></thead>
     <tbody id="users-table"></tbody>
   </table>
 </div>
@@ -89,6 +89,7 @@ async function loadDashboard() {
         <td>${u.credits === 999999 ? '∞' : u.credits}</td>
         <td>${u.hasProfile ? '✓' : '—'}</td>
         <td>${new Date(u.createdAt).toLocaleDateString('fr-FR')}</td>
+        <td><button onclick="setUserPlan('${u.email}','${u.plan==='pro'?'free':'pro'}')" style="padding:4px 10px;border-radius:6px;border:1px solid ${u.plan==='pro'?'#FA6E9A':'#4EFAC8'};background:transparent;color:${u.plan==='pro'?'#FA6E9A':'#4EFAC8'};font-size:11px;cursor:pointer">${u.plan==='pro'?'Passer Free':'Passer Pro'}</button></td>
       </tr>
     `).join('');
 
@@ -96,6 +97,23 @@ async function loadDashboard() {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Enter') loadDashboard(); });
+
+async function setUserPlan(email, plan) {
+  try {
+    const res = await fetch('/api/admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminSecret },
+      body: JSON.stringify({ email, plan, credits: plan === 'pro' ? 999999 : 5 })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      alert(email + ' passé en ' + plan.toUpperCase() + ' !');
+      loadDashboard();
+    } else {
+      alert('Erreur : ' + (data.error || 'inconnue'));
+    }
+  } catch(e) { alert('Erreur : ' + e.message); }
+}
 </script>
 </body>
 </html>
