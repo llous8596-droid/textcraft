@@ -106,7 +106,7 @@ Tout doit être hyper spécifique au secteur "${sector}", pas des conseils gén�
     text = text.replace(/```json|```/g, '').trim();
     const analysis = JSON.parse(text);
 
-    if (user.plan !== 'pro') {
+    if (user.plan !== 'pro' && !isTestAccount) {
       user.credits = Math.max(0, (user.credits || 0) - 1);
       await kvSet(`user:${user.email}`, user);
     }

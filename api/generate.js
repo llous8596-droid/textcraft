@@ -25,7 +25,9 @@ export default async function handler(req, res) {
 
   const user = await kvGet(`user:${payload.email}`);
   if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
-  if (user.plan !== 'pro' && user.credits <= 0) {
+  // Test account bypass
+  const isTestAccount = user.email.includes('+test') || user.email === 'elmehdifares50@gmail.com';
+  if (!isTestAccount && user.plan !== 'pro' && user.credits <= 0) {
     return res.status(403).json({ error: 'Plus de crédits. Passez en Pro pour continuer.' });
   }
 
@@ -90,7 +92,7 @@ Réponds UNIQUEMENT avec le texte final prêt à l'emploi. Aucun commentaire, au
     const data = await response.json();
     const text = data.content?.map(b => b.text || '').join('') || '';
 
-    if (user.plan !== 'pro') {
+    if (user.plan !== 'pro' && !isTestAccount) {
       user.credits = Math.max(0, (user.credits || 0) - 1);
       await kvSet(`user:${user.email}`, user);
     }
