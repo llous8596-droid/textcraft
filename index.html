@@ -1038,7 +1038,9 @@ async function loadHistory(){
     document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Connectez-vous pour voir votre historique.</div>';
     return;
   }
-  document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div>';
+  const listEl = document.getElementById('history-list');
+  if(!listEl) return;
+  listEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div>';
   try{
     const res=await fetch('/api/history',{
       method:'GET',
@@ -1097,20 +1099,31 @@ async function deleteHistItem(id){
 
 // ===== ACCOUNT =====
 async function loadAccount(){
-  if(!authToken){openModal('register');return;}
+  // Fill from currentUser first (instant, no API needed)
+  if(currentUser){
+    document.getElementById('acc-email').textContent = currentUser.email || '—';
+    document.getElementById('acc-plan').innerHTML = currentUser.plan==='pro' ? '<span class="pro-tag">PRO ✦</span>' : 'Gratuit';
+    document.getElementById('acc-credits').textContent = currentUser.plan==='pro' ? 'Illimité' : (currentUser.credits ?? 5) + ' / 5';
+  }
+  if(!authToken) return;
   try{
-    const res=await fetch('/api/profile',{headers:{'Authorization':'Bearer '+authToken}});
-    if(!res.ok) throw new Error('Erreur chargement');
-    const data=await res.json();
-    document.getElementById('acc-email').textContent=data.email||'—';
-    document.getElementById('acc-plan').innerHTML=data.plan==='pro'?'<span class="pro-tag">PRO ✦</span>':'Gratuit';
-    document.getElementById('acc-credits').textContent=data.plan==='pro'?'Illimite':(data.credits+' / 5');
-    document.getElementById('acc-since').textContent=data.createdAt?new Date(data.createdAt).toLocaleDateString('fr-FR'):'—';
-    if(data.plan==='pro'){
-      document.getElementById('team-section').style.display='block';
-      renderTeam(data.team||[]);
+    const res = await fetch('/api/profile', {headers:{'Authorization':'Bearer '+authToken}});
+    if(!res.ok){
+      const e = await res.json().catch(()=>({}));
+      console.error('profile error:', e);
+      return;
     }
-  }catch(e){console.error('loadAccount error:',e);}
+    const data = await res.json();
+    document.getElementById('acc-email').textContent = data.email || '—';
+    document.getElementById('acc-plan').innerHTML = data.plan==='pro' ? '<span class="pro-tag">PRO ✦</span>' : 'Gratuit';
+    document.getElementById('acc-credits').textContent = data.plan==='pro' ? 'Illimité' : (data.credits ?? 5) + ' / 5';
+    document.getElementById('acc-since').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString('fr-FR') : '—';
+    if(data.plan==='pro'){
+      const ts = document.getElementById('team-section');
+      if(ts) ts.style.display = 'block';
+      renderTeam(data.team || []);
+    }
+  } catch(e){ console.error('loadAccount error:', e); }
 }
 
 function renderTeam(team){
