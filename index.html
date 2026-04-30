@@ -229,6 +229,17 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="field"><label>Format</label><div class="pills"><button class="pill selected" data-v="post_instagram">Post Instagram</button><button class="pill" data-v="email_client">Email client</button><button class="pill" data-v="fiche_produit">Fiche produit</button><button class="pill" data-v="bio_instagram">Bio Instagram</button><button class="pill" data-v="sms_promo">SMS promo</button></div></div>
       <div class="field"><label>Ton</label><div class="pills"><button class="pill tone selected" data-v="chaleureux">Chaleureux</button><button class="pill tone" data-v="professionnel">Professionnel</button><button class="pill tone" data-v="fun">Fun</button><button class="pill tone" data-v="luxe">Haut de gamme</button><button class="pill tone" data-v="local">Local</button></div></div>
       <div class="field"><label>Sujet (optionnel)</label><input type="text" id="topic" placeholder="Ex: soldes d'été, nouvelle gamme..."></div>
+      <div class="field">
+        <label>Langue de génération</label>
+        <div class="lang-pills" id="lang-pills">
+          <button class="lang-pill selected" data-v="Français">🇫🇷 Français</button>
+          <button class="lang-pill" data-v="Anglais">🇬🇧 English</button>
+          <button class="lang-pill" data-v="Espagnol">🇪🇸 Español</button>
+          <button class="lang-pill" data-v="Arabe">🇸🇦 العربية</button>
+          <button class="lang-pill" data-v="Allemand">🇩🇪 Deutsch</button>
+          <button class="lang-pill" data-v="Italien">🇮🇹 Italiano</button>
+        </div>
+      </div>
     </div>
     <button class="btn-gen" id="btn-content">✦ Générer mon contenu</button>
     <div class="loading" id="loading-content"><div class="spinner"></div><div class="ls active">Rédaction en cours...</div></div>
@@ -441,6 +452,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('btn-reputation').addEventListener('click',generateReputation);
   document.getElementById('btn-calendar').addEventListener('click',generateCalendar);
   document.getElementById('btn-instagram').addEventListener('click',generateInstagram);
+  document.getElementById('btn-suggestions').addEventListener('click',generateSuggestions);
+  document.querySelectorAll('.lang-pill').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lang-pill').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selLanguage=b.dataset.v;}));
   document.getElementById('auth-password').addEventListener('keydown',e=>e.key==='Enter'&&submitAuth());
   document.getElementById('cal-month').addEventListener('change',e=>calMonth=parseInt(e.target.value));
 });
@@ -540,12 +553,19 @@ async function generateContent(){
   document.querySelectorAll('#page-content .card').forEach(c=>c.style.display='none');btn.style.display='none';
   document.getElementById('loading-content').classList.add('visible');
   try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,format:selFmt,tone:selTone,topic})});
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,format:selFmt,tone:selTone,topic,language:selLanguage})});
     if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Erreur');}
     const data=await res.json();
     if(currentUser&&data.credits!==null){currentUser.credits=data.credits;updateNavUser();}
     document.getElementById('loading-content').classList.remove('visible');
-    document.getElementById('results-content-inner').innerHTML=`<div class="result-card"><div class="result-header"><span class="result-tag">${fmtLabels[selFmt]}</span><button class="btn-copy" onclick="copyText(this)">Copier</button></div><div class="result-text">${data.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;
+    const escapedText = data.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const isInstagram = selFmt === 'post_instagram';
+    document.getElementById('results-content-inner').innerHTML=`<div class="result-card">
+      <div class="result-header"><span class="result-tag">${fmtLabels[selFmt]} ${selLanguage!=='Français'?'· '+selLanguage:''}</span><button class="btn-copy" onclick="copyText(this)">Copier</button></div>
+      ${isInstagram ? `<div class="preview-toggle"><button class="preview-btn active" id="btn-view-text" onclick="togglePreview('text')">📝 Texte</button><button class="preview-btn" id="btn-view-preview" onclick="togglePreview('preview')">📱 Aperçu Instagram</button></div>` : ''}
+      <div id="view-text"><div class="result-text">${escapedText}</div></div>
+      ${isInstagram ? `<div id="view-preview" style="display:none">${renderIgPreview(data.text, document.getElementById('biz-name')?.value||'votrecompte')}</div>` : ''}
+    </div>`;
     document.getElementById('results-content').classList.add('visible');
   }catch(e){document.getElementById('loading-content').classList.remove('visible');document.querySelectorAll('#page-content .card').forEach(c=>c.style.display='block');btn.disabled=false;btn.style.display='block';alert('Erreur : '+e.message);}
 }

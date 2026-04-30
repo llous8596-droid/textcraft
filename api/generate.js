@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Plus de crédits. Passez en Pro pour continuer.' });
   }
 
-  const { name, sector, description, format, tone, topic } = req.body;
+  const { name, sector, description, format, tone, topic, language } = req.body;
   if (!name || !sector || !description || !format || !tone) {
     return res.status(400).json({ error: 'Champs manquants' });
   }
@@ -61,6 +61,9 @@ Génère ${formatInstructions[format]} pour ce business :
 - Secteur : ${sector}
 - Description : ${description}${profileExtra}${topic ? '\n- Sujet/occasion : ' + topic : ''}
 - Ton : ${toneDesc[tone]}
+
+Langue de rédaction : ${language || 'Français'}.
+${language && language !== 'Français' ? 'IMPORTANT : Rédige UNIQUEMENT en ' + language + ', pas en français.' : ''}
 
 Réponds UNIQUEMENT avec le texte final prêt à l'emploi. Aucun commentaire, aucune introduction.`;
 
