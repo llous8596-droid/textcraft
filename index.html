@@ -320,7 +320,8 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="card">
         <div class="card-title"><div class="num">2</div> Mois à planifier</div>
         <div class="grid2">
-          <div class="field"><label>Mois</label><select id="cal-month"><option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option><option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option><option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option><option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option></select></div>
+          <div class="field"><label>Nombre de posts</label><select id="cal-count"><option value="8">8 posts</option><option value="12" selected>12 posts (recommande)</option><option value="16">16 posts</option><option value="20">20 posts</option></select></div>
+        <div class="field"><label>Mois</label><select id="cal-month"><option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option><option value="3">Avril</option><option value="4">Mai</option><option value="5">Juin</option><option value="6">Juillet</option><option value="7">Août</option><option value="8">Septembre</option><option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option></select></div>
           <div class="field"><label>Ton</label><div class="pills" style="margin-top:8px"><button class="pill cal-tone selected" data-v="chaleureux">Chaleureux</button><button class="pill cal-tone" data-v="professionnel">Professionnel</button><button class="pill cal-tone" data-v="fun">Fun</button><button class="pill cal-tone" data-v="local">Local</button></div></div>
         </div>
       </div>
@@ -609,23 +610,33 @@ function switchMode(mode){
     if(btn) btn.classList.toggle('active',m===mode);
   });
   if(mode==='calendar'){
-    if(currentUser?.plan==='pro'){
+    const isTestAccount = currentUser?.email?.includes('+test') || currentUser?.email==='elmehdifares50@gmail.com';
+    if(currentUser?.plan==='pro' || isTestAccount){
       document.getElementById('cal-lock').style.display='none';
       document.getElementById('cal-form').style.display='block';
-      if(currentUser.profile){
-        document.getElementById('cal-profile-banner').style.display='flex';
-        document.getElementById('cpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;
-        document.getElementById('cpb-sub').textContent=currentUser.profile.description.slice(0,50)+'...';
+      if(currentUser?.profile){
+        const calBanner=document.getElementById('cal-profile-banner');
+        if(calBanner) calBanner.style.display='flex';
+        const cpbTitle=document.getElementById('cpb-title');
+        if(cpbTitle) cpbTitle.textContent=currentUser.profile.name+' — '+currentUser.profile.sector;
+        const cpbSub=document.getElementById('cpb-sub');
+        if(cpbSub && currentUser.profile.description) cpbSub.textContent=currentUser.profile.description.slice(0,50)+'...';
       }
     } else {
       document.getElementById('cal-lock').style.display='block';
       document.getElementById('cal-form').style.display='none';
     }
-    if(currentUser?.profile && mode==='reputation'){
-      document.getElementById('rep-profile-banner').style.display='flex';
-      document.getElementById('rpb-title').textContent=currentUser.profile.name;
-    }
   }
+  if(mode==='reputation' && currentUser?.profile){
+    const rpb=document.getElementById('rep-profile-banner');
+    if(rpb){rpb.style.display='flex';document.getElementById('rpb-title').textContent=currentUser.profile.name;}
+  }
+  if(mode==='suggestions' && currentUser?.profile){
+    const spb=document.getElementById('sug-profile-banner');
+    if(spb){spb.style.display='flex';document.getElementById('sugpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;}
+  }
+  if(mode==='history') loadHistory();
+  if(mode==='account') loadAccount();
 }
 
 function selectType(type){
@@ -748,7 +759,7 @@ async function generateCalendar(){
   document.getElementById('loading-cal').classList.add('visible');
   let lsStep=0;const interval=setInterval(()=>{lsStep++;const el=document.getElementById('ls-cal'+(lsStep+1));if(el)el.classList.add('active');},1200);
   try{
-    const res=await fetch('/api/calendar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,tone:selCalTone,month:calMonth,year:calYear,extra})});
+    const res=await fetch('/api/calendar',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,tone:selCalTone,month:calMonth,year:calYear,extra,count:parseInt(document.getElementById('cal-count')?.value||12)})});
     if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Erreur');}
     const data=await res.json();clearInterval(interval);
     calPosts=data.posts;

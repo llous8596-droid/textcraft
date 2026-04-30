@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { kvGet, kvSet } from './_kv.js';
+import { kvGet } from './_kv.js';
 
 function verifyJWT(token, secret) {
   try {
@@ -11,19 +11,6 @@ function verifyJWT(token, secret) {
   } catch { return null; }
 }
 
-const THEMES = [
-  'Présentation du produit phare',
-  'Coulisses / behind the scenes',
-  'Témoignage client imaginé',
-  'Conseil utile lié à votre secteur',
-  'Promotion ou offre spéciale',
-  'Histoire de l\'équipe ou du fondateur',
-  'FAQ — question fréquente client',
-  'Nouveauté ou actualité',
-  'Post saisonnier / événement du mois',
-  'Engagement communauté — question aux abonnés',
-];
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -34,56 +21,79 @@ export default async function handler(req, res) {
   const secret = process.env.JWT_SECRET || 'textcraft-secret-change-me';
   const token = req.headers.authorization?.replace('Bearer ', '');
   const payload = token ? verifyJWT(token, secret) : null;
-  if (!payload) return res.status(401).json({ error: 'Non authentifié' });
+  if (!payload) return res.status(401).json({ error: 'Non authentifie' });
 
   const user = await kvGet(`user:${payload.email}`);
   if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
 
-  // Calendrier = feature Pro uniquement
   const isTestAccount = user.email.includes('+test') || user.email === 'elmehdifares50@gmail.com';
   if (user.plan !== 'pro' && !isTestAccount) {
-    return res.status(403).json({ error: 'Le calendrier de contenu est réservé aux membres Pro.' });
+    return res.status(403).json({ error: 'Le calendrier est reserve aux membres Pro.' });
   }
 
-  const { name, sector, description, tone, month, year, extra } = req.body;
+  const { name, sector, description, tone, month, year, extra, count } = req.body;
   if (!name || !sector || !description) return res.status(400).json({ error: 'Champs manquants' });
 
   const toneDesc = {
     chaleureux: 'chaleureux, humain et bienveillant',
-    professionnel: 'professionnel, sérieux et fiable',
-    fun: 'fun, décontracté et jeune',
-    luxe: 'haut de gamme, élégant et raffiné',
-    local: 'ancré localement, proche des gens du quartier'
+    professionnel: 'professionnel, serieux et fiable',
+    fun: 'fun, decontracte et jeune',
+    luxe: 'haut de gamme, elegant et raffine',
+    local: 'ancre localement, proche des gens du quartier'
   };
 
-  const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  const monthName = monthNames[(month || new Date().getMonth())];
+  const monthNames = ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
+  const monthName = monthNames[month || new Date().getMonth()];
   const currentYear = year || new Date().getFullYear();
+  const postsCount = Math.min(parseInt(count) || 12, 20);
 
-  const prompt = `Tu es un expert en marketing pour les petites entreprises françaises.
+  // Calculate evenly spread days
+  const daysInMonth = new Date(currentYear, (month||new Date().getMonth()) + 1, 0).getDate();
+  const interval = Math.floor(daysInMonth / postsCount);
+  const days = Array.from({length: postsCount}, (_, i) => Math.min(1 + i * interval, daysInMonth));
 
-Génère un calendrier de contenu Instagram pour le mois de ${monthName} ${currentYear} pour ce business :
-- Nom : ${name}
+  const themes = [
+    'Presentation produit phare',
+    'Coulisses / behind the scenes',
+    'Temoignage client',
+    'Conseil utile du secteur',
+    'Promotion ou offre speciale',
+    'Histoire du fondateur',
+    'FAQ client frequente',
+    'Nouveaute ou actualite',
+    'Post saisonnier',
+    'Question engageante aux abonnes',
+    'Comparaison avant/apres',
+    'Top 3 conseils',
+    'Presentation equipe',
+    'Valeurs de la marque',
+    'Recette / tutoriel',
+    'Inspiration / citation',
+    'Collaboration / partenariat',
+    'Concours ou jeu',
+    'Bilan et resultats',
+    'Teaser nouveaute'
+  ];
+
+  const prompt = `Tu es un expert en marketing Instagram pour les petites entreprises francaises.
+
+Cree un calendrier de ${postsCount} posts Instagram pour ${monthName} ${currentYear} :
+- Business : ${name}
 - Secteur : ${sector}
-- Description : ${description}${extra ? '\n- Infos supplémentaires : ' + extra : ''}
+- Description : ${description}${extra ? '\n- Details : ' + extra : ''}
 - Ton : ${toneDesc[tone || 'chaleureux']}
 
-Génère exactement 12 posts Instagram pour le mois (environ 3 par semaine).
-Pour chaque post, utilise un thème différent parmi : ${THEMES.join(', ')}.
+Jours de publication : ${days.join(', ')}
+Themes a utiliser (varies) : ${themes.slice(0, postsCount).join(', ')}
 
-Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, avec ce format exact :
-{
-  "posts": [
-    {
-      "day": 1,
-      "theme": "Présentation du produit phare",
-      "content": "texte complet du post avec emojis et hashtags"
-    }
-  ]
-}
+Reponds UNIQUEMENT en JSON sans markdown :
+{"posts":[{"day":1,"theme":"Nom du theme","content":"Texte complet du post avec emojis et hashtags (100-150 mots)"}]}
 
-Les jours doivent être répartis sur tout le mois (ex: 1, 3, 6, 8, 10, 13, 15, 17, 20, 22, 24, 27).
-Chaque post doit faire entre 80 et 150 mots avec 3-5 hashtags.`;
+IMPORTANT : 
+- Chaque post doit etre COMPLET et pret a publier
+- Varier les themes et les formats
+- Inclure 3-5 hashtags pertinents par post
+- Adapter au secteur ${sector} specifiquement`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -107,19 +117,15 @@ Chaque post doit faire entre 80 et 150 mots avec 3-5 hashtags.`;
 
     const data = await response.json();
     let text = data.content?.map(b => b.text || '').join('') || '';
-
-    // Clean JSON
     text = text.replace(/```json|```/g, '').trim();
     const jsonStart = text.indexOf('{');
     const jsonEnd = text.lastIndexOf('}');
-    if (jsonStart === -1 || jsonEnd === -1) throw new Error('Réponse JSON invalide');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('JSON invalide');
     text = text.slice(jsonStart, jsonEnd + 1);
+
     let parsed;
     try { parsed = JSON.parse(text); }
-    catch(e) {
-      const fixed = text.replace(/\n/g, ' ');
-      parsed = JSON.parse(fixed);
-    }
+    catch(e) { parsed = JSON.parse(text.replace(/\n/g, ' ')); }
 
     return res.status(200).json({ posts: parsed.posts, month: monthName, year: currentYear });
 
