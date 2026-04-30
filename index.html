@@ -414,23 +414,57 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 
 function renderIgPreview(text, bizName) {
   const handle = (bizName||'votrecompte').toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
-  const lines = text.split('\n').filter(l=>l.trim());
-  const caption = lines.slice(0,3).join('\n');
-  const emojis = ['🌟','🔥','✨','💫','🎯','🌸','⚡','💎'];
-  const emoji = emojis[Math.floor(Math.random()*emojis.length)];
-  return `<div class="ig-preview">
-    <div class="ig-preview-header">
-      <div class="ig-preview-avatar"></div>
-      <div class="ig-preview-name">@${handle}</div>
+  const initials = handle.slice(0,2).toUpperCase();
+  const formatted = text
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(#\w+)/g,'<span style="color:#003569">$1</span>')
+    .replace(/\n/g,'<br>');
+  const charCount = text.length;
+  return `<div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin-top:8px">
+    <div style="width:220px;flex-shrink:0;background:#fff;border-radius:22px;border:6px solid #1a1a1a;overflow:hidden;box-shadow:0 0 0 1px #333">
+      <div style="background:#fff;padding:6px 12px 3px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;font-weight:500;color:#000">9:41</span>
+        <span style="font-size:9px;color:#000">●●● WiFi ■■</span>
+      </div>
+      <div style="background:#fff;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #eee">
+        <span style="font-size:15px;font-family:Georgia,serif;font-weight:700;color:#000;letter-spacing:-1px">Instagram</span>
+        <span style="font-size:16px;color:#000">♡ ✉</span>
+      </div>
+      <div style="padding:6px 8px;display:flex;align-items:center;gap:6px">
+        <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;flex-shrink:0">${initials}</div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#000">${handle}</div>
+          <div style="font-size:8px;color:#666">Paris, France</div>
+        </div>
+        <div style="margin-left:auto;font-size:12px;color:#000">···</div>
+      </div>
+      <div style="width:100%;aspect-ratio:1;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center">
+        <span style="color:rgba(255,255,255,0.4);font-size:10px">Votre photo ici</span>
+      </div>
+      <div style="padding:6px 8px 2px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:16px">🤍</span>
+        <span style="font-size:16px">💬</span>
+        <span style="font-size:16px">↗️</span>
+        <span style="margin-left:auto;font-size:16px">🔖</span>
+      </div>
+      <div style="padding:0 8px 3px;font-size:10px;font-weight:600;color:#000">241 j'aime</div>
+      <div style="padding:0 8px 6px;font-size:9px;color:#000;line-height:1.5;max-height:55px;overflow:hidden"><strong>${handle}</strong> ${formatted}</div>
+      <div style="padding:0 8px 4px;font-size:9px;color:#999">Voir les 12 commentaires</div>
+      <div style="padding:0 8px 6px;font-size:8px;color:#999;text-transform:uppercase;letter-spacing:.3px">Il y a 2 heures</div>
+      <div style="background:#fff;padding:6px 0 3px;display:flex;justify-content:space-around;border-top:0.5px solid #eee;font-size:16px">
+        <span>🏠</span><span>🔍</span><span>＋</span><span>🎬</span><span>👤</span>
+      </div>
     </div>
-    <div class="ig-preview-image">${emoji}</div>
-    <div class="ig-preview-actions">
-      <span class="ig-preview-action">🤍</span>
-      <span class="ig-preview-action">💬</span>
-      <span class="ig-preview-action">↗️</span>
+    <div style="flex:1;min-width:160px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Caractères : <strong style="color:${charCount > 2200 ? '#FA6E9A' : 'var(--text)'}">${charCount} / 2200</strong></div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px;font-size:12px;color:var(--muted);line-height:1.7;border:1px solid var(--border)">
+        <div style="color:var(--text);font-weight:600;margin-bottom:6px">Conseils Instagram</div>
+        • Idéal : 125 à 150 mots<br>
+        • Les 3 premières lignes sont visibles sans "voir plus"<br>
+        • Hashtags en fin de caption
+      </div>
     </div>
-    <div class="ig-preview-likes">241 j'aime</div>
-    <div class="ig-preview-caption"><strong>@${handle}</strong> ${caption.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')}</div>
   </div>`;
 }
 
