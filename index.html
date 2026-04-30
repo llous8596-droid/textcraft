@@ -411,6 +411,36 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 </div>
 
 <script>
+
+function renderIgPreview(text, bizName) {
+  const handle = (bizName||'votrecompte').toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+  const lines = text.split('\n').filter(l=>l.trim());
+  const caption = lines.slice(0,3).join('\n');
+  const emojis = ['🌟','🔥','✨','💫','🎯','🌸','⚡','💎'];
+  const emoji = emojis[Math.floor(Math.random()*emojis.length)];
+  return `<div class="ig-preview">
+    <div class="ig-preview-header">
+      <div class="ig-preview-avatar"></div>
+      <div class="ig-preview-name">@${handle}</div>
+    </div>
+    <div class="ig-preview-image">${emoji}</div>
+    <div class="ig-preview-actions">
+      <span class="ig-preview-action">🤍</span>
+      <span class="ig-preview-action">💬</span>
+      <span class="ig-preview-action">↗️</span>
+    </div>
+    <div class="ig-preview-likes">241 j'aime</div>
+    <div class="ig-preview-caption"><strong>@${handle}</strong> ${caption.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')}</div>
+  </div>`;
+}
+
+function togglePreview(mode) {
+  document.getElementById('view-text').style.display = mode==='text'?'block':'none';
+  document.getElementById('view-preview').style.display = mode==='preview'?'block':'none';
+  document.getElementById('btn-view-text').classList.toggle('active', mode==='text');
+  document.getElementById('btn-view-preview').classList.toggle('active', mode==='preview');
+}
+
 const fmtLabels = {post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo'};
 const monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
