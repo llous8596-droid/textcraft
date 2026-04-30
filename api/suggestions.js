@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
   const user = await kvGet(`user:${payload.email}`);
   if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
+  const isTestAccount = user.email.includes('+test') || user.email === 'elmehdifares50@gmail.com';
 
   const { sector, bizName, description } = req.body;
   if (!sector) return res.status(400).json({ error: 'Secteur manquant' });

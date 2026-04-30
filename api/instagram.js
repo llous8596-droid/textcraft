@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
   const user = await kvGet(`user:${payload.email}`);
   if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
+  const isTestAccount = user.email.includes('+test') || user.email === 'elmehdifares50@gmail.com';
   if (user.plan !== 'pro' && user.credits <= 0) {
     return res.status(403).json({ error: 'Plus de crédits.' });
   }
