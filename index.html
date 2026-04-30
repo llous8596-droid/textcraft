@@ -630,12 +630,11 @@ async function generateContent(){
     document.getElementById('loading-content').classList.remove('visible');
     const escapedText = data.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const isInstagram = selFmt === 'post_instagram';
-    document.getElementById('results-content-inner').innerHTML=`<div class="result-card">
-      <div class="result-header"><span class="result-tag">${fmtLabels[selFmt]} ${selLanguage!=='Français'?'· '+selLanguage:''}</span><button class="btn-copy" onclick="copyText(this)">Copier</button></div>
-      ${isInstagram ? `<div class="preview-toggle"><button class="preview-btn active" id="btn-view-text" onclick="togglePreview('text')">📝 Texte</button><button class="preview-btn" id="btn-view-preview" onclick="togglePreview('preview')">📱 Aperçu Instagram</button></div>` : ''}
-      <div id="view-text"><div class="result-text">${escapedText}</div></div>
-      ${isInstagram ? `<div id="view-preview" style="display:none">${renderIgPreview(data.text, document.getElementById('biz-name')?.value||'votrecompte')}</div>` : ''}
-    </div>`;
+    const langTag = selLanguage !== 'Français' ? ' · ' + selLanguage : '';
+    const previewToggle = isInstagram ? '<div class="preview-toggle"><button class="preview-btn active" id="btn-view-text" onclick="togglePreview(\'text\')">Texte</button><button class="preview-btn" id="btn-view-preview" onclick="togglePreview(\'preview\')">Aperçu Instagram</button></div>' : '';
+    const textView = '<div id="view-text"><div class="result-text">' + escapedText + '</div></div>';
+    const previewView = isInstagram ? '<div id="view-preview" style="display:none">' + renderIgPreview(data.text, document.getElementById('biz-name')?.value||'votrecompte') + '</div>' : '';
+    document.getElementById('results-content-inner').innerHTML = '<div class="result-card"><div class="result-header"><span class="result-tag">' + fmtLabels[selFmt] + langTag + '</span><button class="btn-copy" onclick="copyText(this)">Copier</button></div>' + previewToggle + textView + previewView + '</div>';
     document.getElementById('results-content').classList.add('visible');
   }catch(e){document.getElementById('loading-content').classList.remove('visible');document.querySelectorAll('#page-content .card').forEach(c=>c.style.display='block');btn.disabled=false;btn.style.display='block';alert('Erreur : '+e.message);}
 }

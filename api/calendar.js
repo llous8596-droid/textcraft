@@ -110,7 +110,16 @@ Chaque post doit faire entre 80 et 150 mots avec 3-5 hashtags.`;
 
     // Clean JSON
     text = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(text);
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('Réponse JSON invalide');
+    text = text.slice(jsonStart, jsonEnd + 1);
+    let parsed;
+    try { parsed = JSON.parse(text); }
+    catch(e) {
+      const fixed = text.replace(/\n/g, ' ');
+      parsed = JSON.parse(fixed);
+    }
 
     return res.status(200).json({ posts: parsed.posts, month: monthName, year: currentYear });
 

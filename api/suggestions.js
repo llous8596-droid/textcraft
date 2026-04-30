@@ -88,7 +88,16 @@ Génère exactement 12 suggestions variées, spécifiques au secteur "${sector}"
     const data = await response.json();
     let text = data.content?.map(b => b.text || '').join('') || '';
     text = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(text);
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('Réponse JSON invalide');
+    text = text.slice(jsonStart, jsonEnd + 1);
+    let parsed;
+    try { parsed = JSON.parse(text); }
+    catch(e) {
+      const fixed = text.replace(/\n/g, ' ');
+      parsed = JSON.parse(fixed);
+    }
 
     return res.status(200).json({ suggestions: parsed.suggestions, month: currentMonth, year: currentYear });
 

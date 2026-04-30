@@ -103,8 +103,30 @@ Tout doit être hyper spécifique au secteur "${sector}", pas des conseils gén�
 
     const data = await response.json();
     let text = data.content?.map(b => b.text || '').join('') || '';
+
+    // Robust JSON extraction
     text = text.replace(/```json|```/g, '').trim();
-    const analysis = JSON.parse(text);
+    // Find the JSON object boundaries
+    const jsonStart = text.indexOf('{');
+    const jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('Réponse JSON invalide');
+    text = text.slice(jsonStart, jsonEnd + 1);
+
+    let analysis;
+    try {
+      analysis = JSON.parse(text);
+    } catch(parseErr) {
+      // Try to fix common issues: unescaped apostrophes in strings
+      const fixed = text
+        .replace(/([^\\])'([^,:{}\[\]"\n])/g, "$1\'$2")
+        .replace(/
+/g, '\n');
+      try {
+        analysis = JSON.parse(fixed);
+      } catch(e2) {
+        throw new Error('Impossible de parser la réponse : ' + parseErr.message);
+      }
+    }
 
     if (user.plan !== 'pro' && !isTestAccount) {
       user.credits = Math.max(0, (user.credits || 0) - 1);
