@@ -54,7 +54,7 @@ async function sendVerificationEmail(email, token) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      sender: { name: 'TextCraft', email: 'noreply@textcraft-app.com' },
+      sender: { name: 'TextCraft', email: 'elmehdifares50@gmail.com' },
       to: [{ email }],
       subject: 'Confirmez votre email TextCraft ✦',
       htmlContent: html
@@ -256,7 +256,7 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'api-key': process.env.BREVO_API_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sender: { name: 'TextCraft', email: 'noreply@textcraft-app.com' },
+          sender: { name: 'TextCraft', email: 'elmehdifares50@gmail.com' },
           to: [{ email: id }],
           subject: 'Réinitialisation de votre mot de passe TextCraft',
           htmlContent: html
