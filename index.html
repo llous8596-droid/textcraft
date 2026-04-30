@@ -1020,6 +1020,113 @@ async function submitReset(token){
   finally{if(btn){btn.disabled=false;btn.textContent='Enregistrer le mot de passe →';}}
 }
 
+
+// ===== HISTORY =====
+async function loadHistory(){
+  if(!authToken){openModal('register');return;}
+  document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div>';
+  try{
+    const res=await fetch('/api/history',{headers:{'Authorization':'Bearer '+authToken}});
+    const data=await res.json();
+    const history=data.history||[];
+    if(!history.length){
+      document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Aucune generation pour instant.</div>';
+      return;
+    }
+    const fmtLabels2={post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo',google_avis:'Reponse avis Google'};
+    document.getElementById('history-list').innerHTML=history.map(e=>`
+      <div class="history-item" id="hist-${e.id}">
+        <div class="history-item-header">
+          <span class="history-tag">${fmtLabels2[e.format]||e.format}</span>
+          <span class="history-date">${new Date(e.createdAt).toLocaleDateString('fr-FR')}</span>
+        </div>
+        ${e.bizName?`<div class="history-biz">${e.bizName}</div>`:''}
+        <div class="history-preview">${(e.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="history-actions">
+          <button class="btn-hist" onclick="copyHistItem('${e.id}')">Copier</button>
+          <button class="btn-hist danger" onclick="deleteHistItem('${e.id}')">Supprimer</button>
+        </div>
+      </div>`).join('');
+  }catch(e){document.getElementById('history-list').innerHTML='<div style="color:var(--accent2);text-align:center;padding:20px">Erreur : '+e.message+'</div>';}
+}
+
+function copyHistItem(id){
+  const el=document.querySelector('#hist-'+id+' .history-preview');
+  if(!el)return;
+  navigator.clipboard.writeText(el.innerText).then(()=>{
+    const btn=document.querySelector('#hist-'+id+' .btn-hist');
+    if(btn){btn.textContent='Copie ✓';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='Copier';btn.style.color='';},2000);}
+  });
+}
+
+async function deleteHistItem(id){
+  if(!confirm('Supprimer cette generation ?'))return;
+  try{
+    await fetch('/api/history',{method:'DELETE',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({id})});
+    const el=document.getElementById('hist-'+id);
+    if(el)el.remove();
+  }catch(e){alert('Erreur : '+e.message);}
+}
+
+// ===== ACCOUNT =====
+async function loadAccount(){
+  if(!authToken){openModal('register');return;}
+  try{
+    const res=await fetch('/api/profile',{headers:{'Authorization':'Bearer '+authToken}});
+    if(!res.ok) throw new Error('Erreur chargement');
+    const data=await res.json();
+    document.getElementById('acc-email').textContent=data.email||'—';
+    document.getElementById('acc-plan').innerHTML=data.plan==='pro'?'<span class="pro-tag">PRO ✦</span>':'Gratuit';
+    document.getElementById('acc-credits').textContent=data.plan==='pro'?'Illimite':(data.credits+' / 5');
+    document.getElementById('acc-since').textContent=data.createdAt?new Date(data.createdAt).toLocaleDateString('fr-FR'):'—';
+    if(data.plan==='pro'){
+      document.getElementById('team-section').style.display='block';
+      renderTeam(data.team||[]);
+    }
+  }catch(e){console.error('loadAccount error:',e);}
+}
+
+function renderTeam(team){
+  document.getElementById('team-list').innerHTML=team.length
+    ?team.map(e=>`<div class="team-member"><span>${e}</span><button class="btn-remove" onclick="removeTeamMember('${e}')">Retirer</button></div>`).join('')
+    :'<div style="font-size:13px;color:var(--muted)">Aucun membre pour instant.</div>';
+}
+
+async function changePassword(){
+  const current=document.getElementById('pwd-current').value;
+  const newPwd=document.getElementById('pwd-new').value;
+  const msg=document.getElementById('pwd-msg');
+  if(!current||!newPwd){msg.textContent='Remplis les deux champs.';msg.style.color='var(--accent2)';msg.style.display='block';return;}
+  try{
+    const res=await fetch('/api/profile?action=change-password',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({currentPassword:current,newPassword:newPwd})});
+    const data=await res.json();
+    if(!res.ok){msg.textContent=data.error||'Erreur';msg.style.color='var(--accent2)';}
+    else{msg.textContent='Mot de passe change !';msg.style.color='var(--green)';document.getElementById('pwd-current').value='';document.getElementById('pwd-new').value='';}
+    msg.style.display='block';
+  }catch(e){msg.textContent='Erreur de connexion.';msg.style.color='var(--accent2)';msg.style.display='block';}
+}
+
+async function addTeamMember(){
+  const email=document.getElementById('team-email').value.trim();
+  const msg=document.getElementById('team-msg');
+  if(!email)return;
+  try{
+    const res=await fetch('/api/profile?action=add-member',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({memberEmail:email})});
+    const data=await res.json();
+    if(!res.ok){msg.textContent=data.error||'Erreur';msg.style.color='var(--accent2)';}
+    else{msg.textContent='Membre ajoute !';msg.style.color='var(--green)';document.getElementById('team-email').value='';renderTeam(data.team);}
+    msg.style.display='block';
+  }catch(e){msg.textContent='Erreur.';msg.style.color='var(--accent2)';msg.style.display='block';}
+}
+
+async function removeTeamMember(email){
+  try{
+    const res=await fetch('/api/profile?action=remove-member',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({memberEmail:email})});
+    const data=await res.json();
+    if(res.ok)renderTeam(data.team);
+  }catch(e){alert('Erreur.');}
+}
+
 async function startCheckout(){
   if(!authToken){openModal('register');return;}
   try{const res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken}});const data=await res.json();if(data.url)window.location.href=data.url;else throw new Error(data.error||'Erreur');}catch(e){alert('Erreur paiement : '+e.message);}
