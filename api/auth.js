@@ -47,17 +47,17 @@ async function sendVerificationEmail(email, token) {
 </body>
 </html>`;
 
-  const res = await fetch('https://api.resend.com/emails', {
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'api-key': process.env.BREVO_API_KEY,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: 'TextCraft <onboarding@resend.dev>',
-      to: [email],
+      sender: { name: 'TextCraft', email: 'noreply@textcraft-app.com' },
+      to: [{ email }],
       subject: 'Confirmez votre email TextCraft ✦',
-      html
+      htmlContent: html
     })
   });
 
@@ -252,10 +252,15 @@ export default async function handler(req, res) {
 </html>`;
 
     try {
-      await fetch('https://api.resend.com/emails', {
+      await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: 'TextCraft <onboarding@resend.dev>', to: [id], subject: 'Réinitialisation de votre mot de passe TextCraft', html })
+        headers: { 'api-key': process.env.BREVO_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender: { name: 'TextCraft', email: 'noreply@textcraft-app.com' },
+          to: [{ email: id }],
+          subject: 'Réinitialisation de votre mot de passe TextCraft',
+          htmlContent: html
+        })
       });
     } catch(e) { console.error('Reset email error:', e); }
 
