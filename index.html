@@ -379,6 +379,82 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <button class="btn-gen" style="margin-top:8px" onclick="resetInstagram()">📊 Analyser un autre compte</button>
     </div>
   </div>
+  <!-- ===== SUGGESTIONS ===== -->
+  <div id="page-suggestions" style="display:none">
+    <div id="sug-form">
+      <div class="card">
+        <div class="card-title"><div class="num">1</div> Votre activité</div>
+        <div class="grid2">
+          <div class="field"><label>Nom du business</label><input type="text" id="sug-name" placeholder="Ex: Boulangerie Dupont"></div>
+          <div class="field"><label>Secteur</label><select id="sug-sector"><option value="">Choisir...</option><option>Restaurant / Café</option><option>Boulangerie / Pâtisserie</option><option>Boutique de mode</option><option>Salon de coiffure / beauté</option><option>Artisan</option><option>Coach / Consultant</option><option>E-commerce</option><option>Immobilier</option><option>Santé / Bien-être</option><option>Autre</option></select></div>
+        </div>
+        <div class="field"><label>Description (optionnel)</label><input type="text" id="sug-desc" placeholder="En quoi consiste votre activité ?"></div>
+        <div id="sug-profile-banner" style="display:none;margin-top:8px" class="profile-banner">
+          <div style="font-size:16px;flex-shrink:0">✦</div>
+          <div style="flex:1"><div class="profile-banner-title" id="sugpb-title">Profil chargé</div></div>
+          <button class="btn-profile-use" onclick="loadProfileSuggestions()">Utiliser ✓</button>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-suggestions">💡 Générer mes idées du mois</button>
+    </div>
+    <div class="loading" id="loading-sug">
+      <div class="spinner"></div>
+      <div class="ls active">Analyse de votre secteur...</div>
+      <div class="ls" id="ls-sug2">Recherche des tendances du mois...</div>
+      <div class="ls" id="ls-sug3">Génération des idées créatives...</div>
+    </div>
+    <div id="sug-results" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800" id="sug-title">Idées de posts</div>
+          <div style="font-size:13px;color:var(--muted)">Cliquez sur une idée pour générer le post automatiquement</div>
+        </div>
+        <button class="btn-nav" onclick="resetSuggestions()">🔄 Nouvelles idées</button>
+      </div>
+      <div class="suggestions-grid" id="suggestions-grid"></div>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div id="page-history" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700">Vos 50 dernières générations</div>
+      <button class="btn-nav" onclick="loadHistory()">🔄 Actualiser</button>
+    </div>
+    <div id="history-list"><div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div></div>
+  </div>
+
+  <!-- ===== ACCOUNT ===== -->
+  <div id="page-account" style="display:none">
+    <div class="account-section">
+      <h3>👤 Mon compte</h3>
+      <div class="info-row"><span class="info-label">Email</span><span class="info-val" id="acc-email">—</span></div>
+      <div class="info-row"><span class="info-label">Plan</span><span class="info-val" id="acc-plan">—</span></div>
+      <div class="info-row"><span class="info-label">Crédits restants</span><span class="info-val" id="acc-credits">—</span></div>
+      <div class="info-row"><span class="info-label">Membre depuis</span><span class="info-val" id="acc-since">—</span></div>
+    </div>
+    <div class="account-section">
+      <h3>🔒 Changer de mot de passe</h3>
+      <div class="field"><label>Mot de passe actuel</label><input type="password" id="pwd-current" placeholder="Votre mot de passe actuel"></div>
+      <div class="field"><label>Nouveau mot de passe</label><input type="password" id="pwd-new" placeholder="Minimum 6 caractères"></div>
+      <div id="pwd-msg" style="font-size:13px;margin-bottom:12px;display:none"></div>
+      <button class="btn-gen" style="margin-top:4px" onclick="changePassword()">Changer le mot de passe</button>
+    </div>
+    <div class="account-section" id="team-section" style="display:none">
+      <h3>👥 Équipe <span style="font-size:12px;color:var(--muted);font-weight:400">(Pro — max 3 membres)</span></h3>
+      <div id="team-list" style="margin-bottom:16px"></div>
+      <div style="display:flex;gap:8px">
+        <input type="email" id="team-email" placeholder="email@membre.com" style="flex:1">
+        <button class="btn-gen" style="width:auto;padding:11px 20px;font-size:13px" onclick="addTeamMember()">Ajouter</button>
+      </div>
+      <div id="team-msg" style="font-size:13px;margin-top:8px;display:none"></div>
+    </div>
+    <div class="account-section" style="text-align:center">
+      <h3 style="justify-content:center">⚠️ Zone dangereuse</h3>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Se déconnecter de tous les appareils</p>
+      <button class="btn-nav" style="color:var(--accent2);border-color:var(--accent2)" onclick="logout()">Se déconnecter</button>
+    </div>
+  </div>
 
 
 </div>
