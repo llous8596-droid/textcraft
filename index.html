@@ -1023,31 +1023,47 @@ async function submitReset(token){
 
 // ===== HISTORY =====
 async function loadHistory(){
-  if(!authToken){openModal('register');return;}
+  if(!authToken){
+    document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Connectez-vous pour voir votre historique.</div>';
+    return;
+  }
   document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Chargement...</div>';
   try{
-    const res=await fetch('/api/history',{headers:{'Authorization':'Bearer '+authToken}});
+    const res=await fetch('/api/history',{
+      method:'GET',
+      headers:{'Authorization':'Bearer '+authToken,'Content-Type':'application/json'}
+    });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error||'Erreur '+res.status);
+    }
     const data=await res.json();
     const history=data.history||[];
     if(!history.length){
-      document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Aucune generation pour instant.</div>';
+      document.getElementById('history-list').innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">🕐</div><div style="color:var(--muted)">Pas encore de generations.<br>Creez votre premier texte !</div></div>';
       return;
     }
-    const fmtLabels2={post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo',google_avis:'Reponse avis Google'};
-    document.getElementById('history-list').innerHTML=history.map(e=>`
-      <div class="history-item" id="hist-${e.id}">
-        <div class="history-item-header">
-          <span class="history-tag">${fmtLabels2[e.format]||e.format}</span>
-          <span class="history-date">${new Date(e.createdAt).toLocaleDateString('fr-FR')}</span>
-        </div>
-        ${e.bizName?`<div class="history-biz">${e.bizName}</div>`:''}
-        <div class="history-preview">${(e.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-        <div class="history-actions">
-          <button class="btn-hist" onclick="copyHistItem('${e.id}')">Copier</button>
-          <button class="btn-hist danger" onclick="deleteHistItem('${e.id}')">Supprimer</button>
-        </div>
-      </div>`).join('');
-  }catch(e){document.getElementById('history-list').innerHTML='<div style="color:var(--accent2);text-align:center;padding:20px">Erreur : '+e.message+'</div>';}
+    const fl={post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo',google_avis:'Reponse avis Google'};
+    const items = history.map(e=>{
+      const safeText = (e.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');
+      const safeId = e.id||'';
+      return '<div class="history-item" id="hist-'+safeId+'">'
+        +'<div class="history-item-header">'
+        +'<span class="history-tag">'+(fl[e.format]||e.format||'Texte')+'</span>'
+        +'<span class="history-date">'+new Date(e.createdAt).toLocaleDateString('fr-FR')+'</span>'
+        +'</div>'
+        +(e.bizName?'<div class="history-biz">'+e.bizName+'</div>':'')
+        +'<div class="history-preview">'+safeText+'</div>'
+        +'<div class="history-actions">'
+        +'<button class="btn-hist" onclick="copyHistItem(''+safeId+'')">Copier</button>'
+        +'<button class="btn-hist danger" onclick="deleteHistItem(''+safeId+'')">Supprimer</button>'
+        +'</div></div>';
+    });
+    document.getElementById('history-list').innerHTML=items.join('');
+  }catch(e){
+    console.error('History error:',e);
+    document.getElementById('history-list').innerHTML='<div style="color:var(--accent2);text-align:center;padding:20px">Erreur : '+e.message+'</div>';
+  }
 }
 
 function copyHistItem(id){
