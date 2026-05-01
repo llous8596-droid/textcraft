@@ -678,7 +678,31 @@ function loadProfileReputation(){if(!currentUser?.profile)return;document.getEle
 function loadProfileCalendar(){if(!currentUser?.profile)return;const p=currentUser.profile;document.getElementById('cal-name').value=p.name;document.getElementById('cal-sector').value=p.sector;document.getElementById('cal-desc').value=p.description;document.getElementById('cal-extra').value=p.extra||'';}
 function logout(){authToken=null;currentUser=null;localStorage.removeItem('tc_token');updateNavGuest();['pbc-wrap','rep-profile-banner','cal-profile-banner'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});document.getElementById('save-profile-row').style.display='none';}
 
-function openModal(mode){modalMode=mode;switchTab(mode);document.getElementById('modal-overlay').classList.add('visible');setTimeout(()=>document.getElementById('auth-email').focus(),200);}
+function openModal(mode){
+  // Always restore the original modal HTML in case it was replaced
+  document.getElementById('modal-overlay').innerHTML = `
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2 id="modal-title">Créer un compte</h2>
+      <p id="modal-sub">Accédez à vos 5 générations gratuites</p>
+      <div class="modal-tabs">
+        <button class="modal-tab" id="tab-register" onclick="switchTab('register')">Inscription</button>
+        <button class="modal-tab" id="tab-login" onclick="switchTab('login')">Connexion</button>
+      </div>
+      <div class="modal-field"><label>Email</label><input type="email" id="auth-email" placeholder="votre@email.com"></div>
+      <div class="modal-field"><label>Mot de passe</label><input type="password" id="auth-password" placeholder="6 caractères minimum"></div>
+      <div id="forgot-link" style="text-align:right;margin-top:-8px;margin-bottom:12px;display:none">
+        <button onclick="showForgotForm()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Mot de passe oublié ?</button>
+      </div>
+      <div class="modal-err" id="modal-err"></div>
+      <button class="btn-modal" id="btn-auth" onclick="submitAuth()">Créer mon compte</button>
+    </div>`;
+  document.getElementById('auth-password').addEventListener('keydown', e => e.key === 'Enter' && submitAuth());
+  modalMode = mode;
+  switchTab(mode);
+  document.getElementById('modal-overlay').classList.add('visible');
+  setTimeout(() => document.getElementById('auth-email')?.focus(), 200);
+}
 function closeModal(){document.getElementById('modal-overlay').classList.remove('visible');}
 function closeModalOutside(e){if(e.target.id==='modal-overlay')closeModal();}
 function switchTab(mode){modalMode=mode;document.getElementById('tab-register').classList.toggle('active',mode==='register');document.getElementById('tab-login').classList.toggle('active',mode==='login');document.getElementById('modal-title').textContent=mode==='register'?'Créer un compte':'Se connecter';document.getElementById('modal-sub').textContent=mode==='register'?'Accédez à vos 5 générations gratuites':'Content de vous revoir !';document.getElementById('btn-auth').textContent=mode==='register'?'Créer mon compte':'Se connecter';document.getElementById('modal-err').classList.remove('visible');
