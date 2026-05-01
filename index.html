@@ -1092,8 +1092,8 @@ async function loadHistory(){
         +(e.bizName?'<div class="history-biz">'+e.bizName+'</div>':'')
         +'<div class="history-preview">'+safeText+'</div>'
         +'<div class="history-actions">'
-        +'<button class="btn-hist" onclick="copyHistItem(''+safeId+'')">Copier</button>'
-        +'<button class="btn-hist danger" onclick="deleteHistItem(''+safeId+'')">Supprimer</button>'
+        +'<button class="btn-hist" onclick="copyHistItem(\"'+safeId+'\")">Copier</button>'
+        +'<button class="btn-hist danger" onclick="deleteHistItem(\"'+safeId+'\")">Supprimer</button>'
         +'</div></div>';
     });
     document.getElementById('history-list').innerHTML=items.join('');
