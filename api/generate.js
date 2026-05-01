@@ -97,6 +97,21 @@ Réponds UNIQUEMENT avec le texte final prêt à l'emploi. Aucun commentaire, au
       await kvSet(`user:${user.email}`, user);
     }
 
+    // Save to history
+    try {
+      const history = await kvGet(`history:${user.email}`) || [];
+      history.unshift({
+        id: Math.random().toString(36).slice(2),
+        format,
+        text,
+        bizName: name || '',
+        topic: topic || '',
+        createdAt: Date.now()
+      });
+      if (history.length > 50) history.splice(50);
+      await kvSet(`history:${user.email}`, history);
+    } catch(e) { console.error('History save error:', e); }
+
     return res.status(200).json({ text, credits: user.credits, plan: user.plan });
 
   } catch (e) {

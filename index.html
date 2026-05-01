@@ -1191,6 +1191,88 @@ async function removeTeamMember(email){
   }catch(e){alert('Erreur.');}
 }
 
+
+// ===== SUGGESTIONS =====
+let currentSuggestions = [];
+
+function loadProfileSuggestions(){
+  if(!currentUser?.profile) return;
+  document.getElementById('sug-name').value = currentUser.profile.name || '';
+  document.getElementById('sug-sector').value = currentUser.profile.sector || '';
+  document.getElementById('sug-desc').value = currentUser.profile.description || '';
+}
+
+async function generateSuggestions(){
+  if(!authToken){openModal('register');return;}
+  const sector = document.getElementById('sug-sector').value;
+  const bizName = document.getElementById('sug-name').value.trim();
+  const description = document.getElementById('sug-desc').value.trim();
+  if(!sector){alert('Selectionnez votre secteur.');return;}
+  document.getElementById('sug-form').style.display='none';
+  document.getElementById('loading-sug').classList.add('visible');
+  let lsStep=0;
+  const interval=setInterval(()=>{lsStep++;const el=document.getElementById('ls-sug'+(lsStep+1));if(el)el.classList.add('active');},900);
+  try{
+    const res=await fetch('/api/suggestions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({sector,bizName,description})});
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Erreur');}
+    const data=await res.json();
+    clearInterval(interval);
+    currentSuggestions=data.suggestions||[];
+    document.getElementById('loading-sug').classList.remove('visible');
+    document.getElementById('sug-title').textContent='Idées de posts — '+data.month+' '+data.year;
+    renderSuggestions(currentSuggestions,bizName,sector,description);
+    document.getElementById('sug-results').style.display='block';
+  }catch(e){
+    clearInterval(interval);
+    document.getElementById('loading-sug').classList.remove('visible');
+    document.getElementById('sug-form').style.display='block';
+    document.querySelectorAll('.ls').forEach(l=>l.classList.remove('active'));
+    alert('Erreur : '+e.message);
+  }
+}
+
+function renderSuggestions(suggestions, bizName, sector, description){
+  const urgencyClass={'Aujourd\'hui':'urgency-today','Cette semaine':'urgency-week','Ce mois':'urgency-month'};
+  const grid = document.getElementById('suggestions-grid');
+  if(!grid) return;
+  grid.innerHTML = suggestions.map((s,i) => {
+    const uc = urgencyClass[s.urgency] || 'urgency-month';
+    return '<div class="suggestion-card" onclick="useSuggestion('+i+')">'
+      +'<div class="suggestion-emoji">'+(s.emoji||'💡')+'</div>'
+      +'<div class="suggestion-title">'+(s.title||'')+'</div>'
+      +'<div class="suggestion-desc">'+(s.description||'')+'</div>'
+      +'<div class="suggestion-footer">'
+      +'<span class="suggestion-format">'+(s.format||'Post')+'</span>'
+      +'<span class="suggestion-category">'+(s.category||'')+'</span>'
+      +'<span class="suggestion-urgency '+uc+'">'+(s.urgency||'Ce mois')+'</span>'
+      +'</div></div>';
+  }).join('');
+}
+
+function useSuggestion(index){
+  const sug = currentSuggestions[index];
+  if(!sug) return;
+  switchMode('content');
+  const nameEl = document.getElementById('biz-name');
+  const secEl = document.getElementById('biz-sector');
+  const descEl = document.getElementById('biz-desc');
+  const topicEl = document.getElementById('topic');
+  if(nameEl && currentUser?.profile) nameEl.value = currentUser.profile.name || '';
+  if(secEl && currentUser?.profile) secEl.value = currentUser.profile.sector || '';
+  if(descEl && currentUser?.profile) descEl.value = currentUser.profile.description || '';
+  if(topicEl) topicEl.value = sug.title || '';
+  document.querySelectorAll('.pill:not(.tone):not(.rep-tone):not(.cal-tone)').forEach(b=>b.classList.remove('selected'));
+  const fmtBtn = document.querySelector('.pill[data-v="post_instagram"]');
+  if(fmtBtn){fmtBtn.classList.add('selected');selFmt='post_instagram';}
+  document.getElementById('btn-content')?.scrollIntoView({behavior:'smooth'});
+}
+
+function resetSuggestions(){
+  document.getElementById('sug-results').style.display='none';
+  document.getElementById('sug-form').style.display='block';
+  document.querySelectorAll('.ls').forEach(l=>l.classList.remove('active'));
+}
+
 async function startCheckout(){
   if(!authToken){openModal('register');return;}
   try{const res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken}});const data=await res.json();if(data.url)window.location.href=data.url;else throw new Error(data.error||'Erreur');}catch(e){alert('Erreur paiement : '+e.message);}
