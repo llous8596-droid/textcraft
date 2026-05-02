@@ -194,6 +194,8 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   <button class="mode-btn" id="mode-suggestions" onclick="switchMode('suggestions')"><span class="mode-icon">💡</span> Idées de posts</button>
   <button class="mode-btn" id="mode-history" onclick="switchMode('history')"><span class="mode-icon">🕐</span> Historique</button>
   <button class="mode-btn" id="mode-account" onclick="switchMode('account')"><span class="mode-icon">👤</span> Mon compte</button>
+  <button class="mode-btn" id="mode-bio" onclick="switchMode('bio')"><span class="mode-icon">✍️</span> Bio Instagram</button>
+  <button class="mode-btn" id="mode-dashboard" onclick="switchMode('dashboard')"><span class="mode-icon">📈</span> Dashboard</button>
 </div>
 
 <div class="main">
@@ -340,6 +342,7 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="cal-header">
         <h2 id="cal-title">Calendrier</h2>
         <button class="btn-gen" style="width:auto;padding:10px 20px;font-size:13px" onclick="resetCalendar()">← Nouveau calendrier</button>
+        <button class="btn-gen" style="width:auto;padding:10px 20px;font-size:13px;background:var(--surface);border:1px solid var(--accent);color:var(--accent)" onclick="exportCalendarPDF()">📄 Exporter PDF</button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
     </div>
@@ -459,6 +462,92 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 
 
 </div>
+  <!-- ===== BIO INSTAGRAM ===== -->
+  <div id="page-bio" style="display:none">
+    <div id="bio-form">
+      <div class="card">
+        <div class="card-title"><div class="num">1</div> Votre business</div>
+        <div class="grid2">
+          <div class="field"><label>Nom du business</label><input type="text" id="bio-name" placeholder="Ex: Boulangerie Dupont"></div>
+          <div class="field"><label>Secteur</label><select id="bio-sector"><option value="">Choisir...</option><option>Restaurant / Café</option><option>Boulangerie / Pâtisserie</option><option>Boutique de mode</option><option>Salon de coiffure / beauté</option><option>Artisan</option><option>Coach / Consultant</option><option>E-commerce</option><option>Immobilier</option><option>Santé / Bien-être</option><option>Autre</option></select></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Handle Instagram actuel</label><input type="text" id="bio-handle" placeholder="@votrecompte"></div>
+          <div class="field"><label>Ville</label><input type="text" id="bio-city" placeholder="Ex: Paris, Lyon..."></div>
+        </div>
+        <div class="field"><label>Description de votre activité</label><textarea id="bio-desc" rows="2" placeholder="En quoi consiste votre activité ? Vos spécialités ?"></textarea></div>
+        <div class="field"><label>Infos supplémentaires (optionnel)</label><input type="text" id="bio-extra" placeholder="Produits phares, valeurs, clientèle..."></div>
+        <div class="field"><label>Ton</label><div class="pills"><button class="pill bio-tone selected" data-v="chaleureux">Chaleureux</button><button class="pill bio-tone" data-v="professionnel">Professionnel</button><button class="pill bio-tone" data-v="fun">Fun</button><button class="pill bio-tone" data-v="luxe">Haut de gamme</button><button class="pill bio-tone" data-v="local">Local</button></div></div>
+        <div id="bio-profile-banner" style="display:none;margin-top:8px" class="profile-banner">
+          <div style="font-size:16px;flex-shrink:0">✦</div>
+          <div style="flex:1"><div class="profile-banner-title" id="biopb-title">Profil chargé</div></div>
+          <button class="btn-profile-use" onclick="loadProfileBio()">Utiliser ✓</button>
+        </div>
+      </div>
+      <button class="btn-gen" id="btn-bio">✍️ Générer mon profil Instagram complet</button>
+    </div>
+    <div class="loading" id="loading-bio">
+      <div class="spinner"></div>
+      <div class="ls active">Analyse de votre activité...</div>
+      <div class="ls" id="ls-bio2">Optimisation du profil...</div>
+      <div class="ls" id="ls-bio3">Création des éléments...</div>
+    </div>
+    <div id="bio-results" style="display:none">
+      <div class="bio-result-section">
+        <div class="bio-section-title">📛 Nom de page recommandé</div>
+        <div class="bio-text" id="bio-res-nom"></div>
+        <div style="margin-top:8px;font-size:12px;color:var(--muted)" id="bio-res-handle"></div>
+      </div>
+      <div class="bio-result-section">
+        <div class="bio-section-title" style="justify-content:space-between">
+          <span>📝 Bio principale <span style="font-size:11px;color:var(--muted);font-weight:400">(150 caractères max)</span></span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-bio')">Copier</button>
+        </div>
+        <div class="bio-text" id="bio-res-bio"></div>
+        <div class="bio-char-count" id="bio-char-count"></div>
+      </div>
+      <div class="bio-result-section">
+        <div class="bio-section-title" style="justify-content:space-between">
+          <span>💬 Call to action (lien en bio)</span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-cta')">Copier</button>
+        </div>
+        <div class="bio-text" id="bio-res-cta"></div>
+      </div>
+      <div class="bio-result-section">
+        <div class="bio-section-title">📌 Story Highlights recommandés</div>
+        <div class="highlight-tags" id="bio-res-highlights"></div>
+      </div>
+      <div class="bio-result-section">
+        <div class="bio-section-title" style="justify-content:space-between">
+          <span>📌 Post épinglé suggéré</span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-pinned')">Copier</button>
+        </div>
+        <div class="bio-text" id="bio-res-pinned"></div>
+      </div>
+      <div class="bio-result-section">
+        <div class="bio-section-title">💡 Conseils pour votre secteur</div>
+        <ul class="tips-list" id="bio-res-tips"></ul>
+      </div>
+      <button class="btn-gen" style="margin-top:8px" onclick="resetBio()">✍️ Générer un autre profil</button>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="page-dashboard" style="display:none">
+    <div id="dash-content">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px">📈 Votre tableau de bord</div>
+      <div class="dash-stats" id="dash-stats"></div>
+      <div class="dash-chart">
+        <div class="dash-chart-title">Générations par format</div>
+        <div class="fmt-list" id="dash-formats"></div>
+      </div>
+      <div class="dash-chart">
+        <div class="dash-chart-title">Activité des 7 derniers jours</div>
+        <div class="bar-chart" id="dash-bars"></div>
+      </div>
+    </div>
+  </div>
+
 
 <footer>TextCraft — Conçu pour les petites entreprises françaises</footer>
 
@@ -597,13 +686,15 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('btn-calendar').addEventListener('click',generateCalendar);
   document.getElementById('btn-instagram').addEventListener('click',generateInstagram);
   document.getElementById('btn-suggestions').addEventListener('click',generateSuggestions);
+  document.getElementById('btn-bio').addEventListener('click',generateBio);
+  document.querySelectorAll('.pill.bio-tone').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.pill.bio-tone').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selBioTone=b.dataset.v;}));
   document.querySelectorAll('.lang-pill').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lang-pill').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');selLanguage=b.dataset.v;}));
   document.getElementById('auth-password').addEventListener('keydown',e=>e.key==='Enter'&&submitAuth());
   document.getElementById('cal-month').addEventListener('change',e=>calMonth=parseInt(e.target.value));
 });
 
 function switchMode(mode){
-  ['content','reputation','calendar','instagram','suggestions','history','account'].forEach(m=>{
+  ['content','reputation','calendar','instagram','suggestions','history','account','bio','dashboard'].forEach(m=>{
     const page=document.getElementById('page-'+m);
     const btn=document.getElementById('mode-'+m);
     if(page) page.style.display=m===mode?'block':'none';
@@ -635,8 +726,10 @@ function switchMode(mode){
     const spb=document.getElementById('sug-profile-banner');
     if(spb){spb.style.display='flex';document.getElementById('sugpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;}
   }
+  if(mode==='bio' && currentUser?.profile){const bp=document.getElementById('bio-profile-banner');if(bp){bp.style.display='flex';document.getElementById('biopb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;}}
   if(mode==='history') loadHistory();
   if(mode==='account') loadAccount();
+  if(mode==='dashboard') loadDashboard();
 }
 
 function selectType(type){
@@ -1191,6 +1284,132 @@ async function removeTeamMember(email){
   }catch(e){alert('Erreur.');}
 }
 
+
+
+// ===== BIO GENERATOR =====
+let selBioTone = 'chaleureux';
+
+function loadProfileBio(){
+  if(!currentUser?.profile) return;
+  const p = currentUser.profile;
+  document.getElementById('bio-name').value = p.name || '';
+  document.getElementById('bio-sector').value = p.sector || '';
+  document.getElementById('bio-desc').value = p.description || '';
+  document.getElementById('bio-extra').value = p.extra || '';
+}
+
+async function generateBio(){
+  if(!authToken){openModal('register');return;}
+  const name = document.getElementById('bio-name').value.trim();
+  const sector = document.getElementById('bio-sector').value;
+  const description = document.getElementById('bio-desc').value.trim();
+  const handle = document.getElementById('bio-handle').value.trim();
+  const city = document.getElementById('bio-city').value.trim();
+  const extra = document.getElementById('bio-extra').value.trim();
+  if(!name || !sector){alert('Remplis le nom et le secteur.');return;}
+
+  document.getElementById('bio-form').style.display='none';
+  document.getElementById('loading-bio').classList.add('visible');
+  let ls=0;const intv=setInterval(()=>{ls++;const el=document.getElementById('ls-bio'+(ls+1));if(el)el.classList.add('active');},900);
+
+  try{
+    const res=await fetch('/api/bio',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({name,sector,description,handle,city,tone:selBioTone,extra})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||'Erreur');}
+    const data=await res.json();
+    clearInterval(intv);
+    document.getElementById('loading-bio').classList.remove('visible');
+    renderBio(data.bio);
+    document.getElementById('bio-results').style.display='block';
+  }catch(e){
+    clearInterval(intv);
+    document.getElementById('loading-bio').classList.remove('visible');
+    document.getElementById('bio-form').style.display='block';
+    alert('Erreur : '+e.message);
+  }
+}
+
+function renderBio(b){
+  document.getElementById('bio-res-nom').textContent = b.nom_page || '';
+  document.getElementById('bio-res-handle').textContent = b.handle_suggestion ? 'Handle suggéré : '+b.handle_suggestion : '';
+  document.getElementById('bio-res-bio').textContent = b.bio || '';
+  const bioLen = (b.bio||'').length;
+  document.getElementById('bio-char-count').textContent = bioLen+' / 150 caractères'+(bioLen>150?' ⚠️ Trop long':'');
+  document.getElementById('bio-res-cta').textContent = b.call_to_action || '';
+  document.getElementById('bio-res-highlights').innerHTML = (b.story_highlights||[]).map(h=>'<div class="highlight-tag">'+h+'</div>').join('');
+  document.getElementById('bio-res-pinned').textContent = b.post_pinne || '';
+  document.getElementById('bio-res-tips').innerHTML = (b.tips||[]).map(t=>'<li>'+t+'</li>').join('');
+}
+
+function copyBioSection(id){
+  const el=document.getElementById(id);if(!el)return;
+  navigator.clipboard.writeText(el.textContent).then(()=>{
+    const btns=document.querySelectorAll('.btn-copy');
+    btns.forEach(b=>{if(b.getAttribute('onclick')?.includes(id)){b.textContent='Copié ✓';b.style.color='var(--green)';setTimeout(()=>{b.textContent='Copier';b.style.color='';},2000);}});
+  });
+}
+
+function resetBio(){
+  document.getElementById('bio-results').style.display='none';
+  document.getElementById('bio-form').style.display='block';
+  document.querySelectorAll('.ls').forEach(l=>l.classList.remove('active'));
+}
+
+// ===== PDF EXPORT =====
+function exportCalendarPDF(){
+  window.print();
+}
+
+// ===== DASHBOARD =====
+async function loadDashboard(){
+  if(!authToken) return;
+  try{
+    const res = await fetch('/api/history',{headers:{'Authorization':'Bearer '+authToken}});
+    if(!res.ok) return;
+    const data = await res.json();
+    const history = data.history || [];
+
+    // Stats
+    const total = history.length;
+    const thisMonth = history.filter(h => new Date(h.createdAt).getMonth() === new Date().getMonth()).length;
+    const formats = {};
+    history.forEach(h => { formats[h.format] = (formats[h.format]||0)+1; });
+    const topFormat = Object.entries(formats).sort((a,b)=>b[1]-a[1])[0];
+
+    document.getElementById('dash-stats').innerHTML = `
+      <div class="dash-stat"><div class="dash-stat-val" style="color:var(--accent)">${total}</div><div class="dash-stat-label">Total générations</div></div>
+      <div class="dash-stat"><div class="dash-stat-val" style="color:var(--green)">${thisMonth}</div><div class="dash-stat-label">Ce mois-ci</div></div>
+      <div class="dash-stat"><div class="dash-stat-val" style="color:var(--accent2)">${Object.keys(formats).length}</div><div class="dash-stat-label">Formats utilisés</div></div>
+      <div class="dash-stat"><div class="dash-stat-val" style="font-size:18px;color:var(--orange)">${topFormat?fmtShort(topFormat[0]):'—'}</div><div class="dash-stat-label">Format favori</div></div>
+    `;
+
+    // Format bars
+    const fmtNames={post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo',google_avis:'Avis Google'};
+    const maxFmt = Math.max(...Object.values(formats), 1);
+    document.getElementById('dash-formats').innerHTML = Object.entries(formats)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([fmt,cnt])=>`<div class="fmt-row"><span class="fmt-name">${fmtNames[fmt]||fmt}</span><div class="fmt-bar-track"><div class="fmt-bar-fill" style="width:${Math.round(cnt/maxFmt*100)}%"></div></div><span class="fmt-count">${cnt}</span></div>`)
+      .join('') || '<div style="color:var(--muted);font-size:13px">Pas encore de données.</div>';
+
+    // 7 day activity bars
+    const days7 = Array.from({length:7},(_,i)=>{
+      const d = new Date(); d.setDate(d.getDate()-6+i);
+      return {label:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'][d.getDay()],count:history.filter(h=>{const hd=new Date(h.createdAt);return hd.toDateString()===d.toDateString();}).length};
+    });
+    const maxDay = Math.max(...days7.map(d=>d.count),1);
+    document.getElementById('dash-bars').innerHTML = days7.map(d=>`
+      <div class="bar-col">
+        <span class="bar-val">${d.count||''}</span>
+        <div class="bar-fill" style="height:${Math.max(d.count/maxDay*80,d.count>0?8:2)}px"></div>
+        <span class="bar-label">${d.label}</span>
+      </div>`).join('');
+
+  }catch(e){console.error('Dashboard error:',e);}
+}
+
+function fmtShort(fmt){
+  const s={post_instagram:'Insta',email_client:'Email',fiche_produit:'Fiche',bio_instagram:'Bio',sms_promo:'SMS',google_avis:'Avis'};
+  return s[fmt]||fmt;
+}
 
 // ===== SUGGESTIONS =====
 let currentSuggestions = [];
