@@ -493,69 +493,91 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="ls" id="ls-bio3">Création des éléments...</div>
     </div>
     <div id="bio-results" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div>
-          <div class="bio-card2">
-            <div class="bio-card2-title"><span>Nom de page</span></div>
-            <div class="bio-textbox" id="bio-res-nom"></div>
-            <div style="font-size:11px;color:var(--muted);margin-top:6px" id="bio-res-handle"></div>
+
+      <!-- APERCU INSTAGRAM EN HAUT -->
+      <div class="bio-card2" style="max-width:380px;margin:0 auto 20px">
+        <div class="bio-card2-title" style="justify-content:center;margin-bottom:14px">📱 Aperçu de votre profil Instagram</div>
+        <div class="ig-phone-mock">
+          <div class="ig-mock-bar">
+            <div class="ig-mock-avatar"></div>
+            <div class="ig-mock-user" id="ig-mock-user">@votrecompte</div>
           </div>
-          <div class="bio-card2">
-            <div class="bio-card2-title"><span>Bio <span style="font-weight:400;color:var(--muted)">(150 car. max)</span></span><button class="btn-copy" onclick="copyBioSection('bio-res-bio')">Copier</button></div>
-            <div class="bio-textbox" id="bio-res-bio"></div>
-            <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right" id="bio-char-count"></div>
+          <div class="ig-mock-body">
+            <div class="ig-mock-name" id="ig-mock-name">Nom de page</div>
+            <div class="ig-mock-bio" id="ig-mock-bio">Votre bio apparaîtra ici...</div>
+            <div class="ig-mock-cta" id="ig-mock-cta"></div>
           </div>
-          <div class="bio-card2">
-            <div class="bio-card2-title"><span>Call to action</span><button class="btn-copy" onclick="copyBioSection('bio-res-cta')">Copier</button></div>
-            <div class="bio-textbox" id="bio-res-cta"></div>
-          </div>
-          <div class="bio-card2">
-            <div class="bio-card2-title">Story Highlights</div>
-            <div class="bio-highlights" id="bio-res-highlights"></div>
-          </div>
-          <div class="bio-card2">
-            <div class="bio-card2-title">Conseils</div>
-            <ul class="bio-tips" id="bio-res-tips"></ul>
-          </div>
-        </div>
-        <div>
-          <div class="bio-card2">
-            <div class="bio-card2-title">Aperçu Instagram</div>
-            <div class="ig-phone-mock">
-              <div class="ig-mock-bar">
-                <div class="ig-mock-avatar" id="ig-mock-avatar"></div>
-                <div class="ig-mock-user" id="ig-mock-user">@votrecompte</div>
-              </div>
-              <div class="ig-mock-body">
-                <div class="ig-mock-name" id="ig-mock-name">Nom de page</div>
-                <div class="ig-mock-bio" id="ig-mock-bio">Votre bio apparaîtra ici...</div>
-                <div class="ig-mock-cta" id="ig-mock-cta"></div>
-              </div>
-              <div class="ig-mock-highlights" id="ig-mock-highlights"></div>
-            </div>
-          </div>
-          <div class="bio-card2">
-            <div class="bio-card2-title"><span>Post épinglé suggéré</span><button class="btn-copy" onclick="copyBioSection('bio-res-pinned')">Copier</button></div>
-            <div class="bio-textbox" id="bio-res-pinned"></div>
-          </div>
+          <div class="ig-mock-highlights" id="ig-mock-highlights"></div>
         </div>
       </div>
-      <button class="btn-gen" style="margin-top:16px" onclick="resetBio()">✍️ Générer un autre profil</button>
+
+      <!-- ELEMENTS A COPIER -->
+      <div class="bio-card2">
+        <div class="bio-card2-title"><span>📛 Nom de page recommandé</span></div>
+        <div class="bio-textbox" id="bio-res-nom"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px" id="bio-res-handle"></div>
+      </div>
+
+      <div class="bio-card2">
+        <div class="bio-card2-title">
+          <span>📝 Bio <span style="font-weight:400;color:var(--muted);font-size:11px">(150 caractères max)</span></span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-bio')">Copier</button>
+        </div>
+        <div class="bio-textbox" id="bio-res-bio"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right" id="bio-char-count"></div>
+      </div>
+
+      <div class="bio-card2">
+        <div class="bio-card2-title">
+          <span>🔗 Texte du lien en bio</span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-cta')">Copier</button>
+        </div>
+        <div class="bio-textbox" id="bio-res-cta"></div>
+      </div>
+
+      <div class="bio-card2">
+        <div class="bio-card2-title">⭕ Story Highlights recommandés</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Créez ces catégories dans vos Stories pour organiser votre profil</div>
+        <div class="bio-highlights" id="bio-res-highlights"></div>
+      </div>
+
+      <div class="bio-card2">
+        <div class="bio-card2-title">
+          <span>📌 Idée de post épinglé</span>
+          <button class="btn-copy" onclick="copyBioSection('bio-res-pinned')">Copier</button>
+        </div>
+        <div class="bio-textbox" id="bio-res-pinned"></div>
+      </div>
+
+      <div class="bio-card2">
+        <div class="bio-card2-title">💡 Conseils pour votre secteur</div>
+        <ul class="bio-tips" id="bio-res-tips"></ul>
+      </div>
+
+      <button class="btn-gen" style="margin-top:8px" onclick="resetBio()">✍️ Générer un autre profil</button>
     </div>
   </div>
 
   <!-- ===== DASHBOARD ===== -->
   <div id="page-dashboard" style="display:none">
-    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px">Votre tableau de bord</div>
-    <div class="dash-stats-grid" id="dash-stats"></div>
-    <div class="dash-card">
-      <div class="dash-card-title">Répartition par format</div>
-      <div id="dash-formats"></div>
-    </div>
-    <div class="dash-card">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:24px">📈 Tableau de bord</div>
+
+    <!-- STATS -->
+    <div class="dash-stats-grid" id="dash-stats" style="margin-bottom:20px"></div>
+
+    <!-- ACTIVITE -->
+    <div class="dash-card" style="margin-bottom:16px">
       <div class="dash-card-title">Activité des 7 derniers jours</div>
-      <div style="position:relative;height:120px"><canvas id="dash-activity-chart" role="img" aria-label="Activité des 7 derniers jours">Graphique d'activité quotidienne</canvas></div>
-      <div style="display:flex;justify-content:space-around;margin-top:6px" id="dash-day-labels"></div>
+      <div style="position:relative;height:140px">
+        <canvas id="dash-activity-chart" role="img" aria-label="Activité des 7 derniers jours"></canvas>
+      </div>
+      <div style="display:flex;justify-content:space-around;margin-top:8px" id="dash-day-labels"></div>
+    </div>
+
+    <!-- FORMATS -->
+    <div class="dash-card">
+      <div class="dash-card-title">Vos formats préférés</div>
+      <div id="dash-formats"></div>
     </div>
   </div>
 
@@ -1340,33 +1362,41 @@ async function generateBio(){
 }
 
 function renderBio(b){
-  // Left column
-  document.getElementById('bio-res-nom').textContent = b.nom_page || '';
-  document.getElementById('bio-res-handle').textContent = b.handle_suggestion ? 'Handle suggéré : '+b.handle_suggestion : '';
-  document.getElementById('bio-res-bio').textContent = b.bio || '';
+  // Text fields
+  const nom = document.getElementById('bio-res-nom');
+  const handle = document.getElementById('bio-res-handle');
+  const bio = document.getElementById('bio-res-bio');
+  const charCount = document.getElementById('bio-char-count');
+  const cta = document.getElementById('bio-res-cta');
+  const highlights = document.getElementById('bio-res-highlights');
+  const pinned = document.getElementById('bio-res-pinned');
+  const tips = document.getElementById('bio-res-tips');
+
+  if(nom) nom.textContent = b.nom_page || '';
+  if(handle) handle.textContent = b.handle_suggestion ? '💡 Handle suggéré : '+b.handle_suggestion : '';
+  if(bio) bio.textContent = b.bio || '';
   const bioLen = (b.bio||'').length;
-  const charEl = document.getElementById('bio-char-count');
-  if(charEl) charEl.textContent = bioLen+' / 150 caractères'+(bioLen>150?' ⚠️':'');
-  document.getElementById('bio-res-cta').textContent = b.call_to_action || '';
-  document.getElementById('bio-res-highlights').innerHTML = (b.story_highlights||[]).map(h=>'<div class="bio-hl-tag">'+h+'</div>').join('');
-  document.getElementById('bio-res-pinned').textContent = b.post_pinne || '';
-  document.getElementById('bio-res-tips').innerHTML = (b.tips||[]).map(t=>'<li>'+t+'</li>').join('');
+  if(charCount) charCount.textContent = bioLen+' / 150 caractères'+(bioLen>150?' ⚠️ Trop long !':'');
+  if(cta) cta.textContent = b.call_to_action || '';
+  if(highlights) highlights.innerHTML = (b.story_highlights||[]).map(h=>'<div class="bio-hl-tag">'+h+'</div>').join('');
+  if(pinned) pinned.textContent = b.post_pinne || '';
+  if(tips) tips.innerHTML = (b.tips||[]).map(t=>'<li>'+t+'</li>').join('');
 
-  // Right column - Instagram mock preview
-  const handle = (b.handle_suggestion||'votrecompte').replace('@','');
-  const initials = handle.slice(0,2).toUpperCase();
-  document.getElementById('ig-mock-avatar').textContent = '';
-  document.getElementById('ig-mock-user').textContent = '@'+handle;
-  document.getElementById('ig-mock-name').textContent = b.nom_page || '';
-  document.getElementById('ig-mock-bio').textContent = b.bio || '';
-  document.getElementById('ig-mock-cta').textContent = b.call_to_action || '';
+  // Instagram preview
+  const igHandle = (b.handle_suggestion||'votrecompte').replace('@','');
+  const igUser = document.getElementById('ig-mock-user');
+  const igName = document.getElementById('ig-mock-name');
+  const igBio = document.getElementById('ig-mock-bio');
+  const igCta = document.getElementById('ig-mock-cta');
+  const igHl = document.getElementById('ig-mock-highlights');
 
-  const hlContainer = document.getElementById('ig-mock-highlights');
-  if(hlContainer){
-    hlContainer.innerHTML = (b.story_highlights||[]).slice(0,4).map(h=>
-      '<div class="ig-mock-hl"><div class="ig-mock-hl-circle"></div><div class="ig-mock-hl-label">'+h+'</div></div>'
-    ).join('');
-  }
+  if(igUser) igUser.textContent = '@'+igHandle;
+  if(igName) igName.textContent = b.nom_page || '';
+  if(igBio) igBio.textContent = b.bio || '';
+  if(igCta) igCta.textContent = b.call_to_action || '';
+  if(igHl) igHl.innerHTML = (b.story_highlights||[]).slice(0,4).map(h=>
+    '<div class="ig-mock-hl"><div class="ig-mock-hl-circle"></div><div class="ig-mock-hl-label">'+h+'</div></div>'
+  ).join('');
 }
 
 function copyBioSection(id){
