@@ -568,15 +568,13 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
     <!-- ACTIVITE -->
     <div class="dash-card" style="margin-bottom:16px">
       <div class="dash-card-title">Activité des 7 derniers jours</div>
-      <div style="position:relative;height:140px">
-        <canvas id="dash-activity-chart" role="img" aria-label="Activité des 7 derniers jours"></canvas>
+      <div style="position:relative;height:160px">
+        <canvas id="dash-activity-chart" role="img" aria-label="Activité des 7 derniers jours">Graphique d'activité quotidienne</canvas>
       </div>
-      <div style="display:flex;justify-content:space-around;margin-top:8px" id="dash-day-labels"></div>
     </div>
 
-    <!-- FORMATS -->
     <div class="dash-card">
-      <div class="dash-card-title">Vos formats préférés</div>
+      <div class="dash-card-title">Répartition par format</div>
       <div id="dash-formats"></div>
     </div>
   </div>
@@ -1436,59 +1434,57 @@ async function loadDashboard(){
     const topFormat = Object.entries(formats).sort((a,b)=>b[1]-a[1])[0];
     const fmtNames = {post_instagram:'Post Instagram',email_client:'Email client',fiche_produit:'Fiche produit',bio_instagram:'Bio Instagram',sms_promo:'SMS promo',google_avis:'Avis Google'};
 
-    // Stats cards
-    document.getElementById('dash-stats').innerHTML = [
-      {val:total, lbl:'Total générations', color:'var(--accent)'},
-      {val:thisMonth, lbl:'Ce mois-ci', color:'var(--green)'},
-      {val:Object.keys(formats).length, lbl:'Formats utilisés', color:'var(--accent2)'},
-      {val:topFormat?fmtNames[topFormat[0]]||topFormat[0]:'—', lbl:'Format favori', color:'var(--orange)', small:true}
-    ].map(s=>'<div class="dash-stat2"><div class="dash-stat2-val" style="color:'+s.color+';'+(s.small?'font-size:16px':'')+'">'+s.val+'</div><div class="dash-stat2-lbl">'+s.lbl+'</div></div>').join('');
+    // Stats — clean metric cards
+    const statsEl = document.getElementById('dash-stats');
+    if(statsEl) statsEl.innerHTML = [
+      {val: total, lbl: 'Total générations'},
+      {val: thisMonth, lbl: 'Ce mois-ci'},
+      {val: Object.keys(formats).length, lbl: 'Formats utilisés'},
+      {val: topFormat ? (fmtNames[topFormat[0]]||topFormat[0]) : '—', lbl: 'Format favori', small: true}
+    ].map(s=>'<div class="dash-stat2"><div class="dash-stat2-val"'+(s.small?' style="font-size:15px;margin-top:4px"':'')+'>'+s.val+'</div><div class="dash-stat2-lbl">'+s.lbl+'</div></div>').join('');
 
-    // Format bars
-    const maxFmt = Math.max(...Object.values(formats), 1);
-    document.getElementById('dash-formats').innerHTML = Object.entries(formats)
-      .sort((a,b)=>b[1]-a[1])
-      .map(([fmt,cnt])=>'<div class="dash-fmt-row"><span class="dash-fmt-name">'+(fmtNames[fmt]||fmt)+'</span><div class="dash-fmt-track"><div class="dash-fmt-fill" style="width:'+Math.round(cnt/maxFmt*100)+'%"></div></div><span class="dash-fmt-num">'+cnt+'</span></div>')
-      .join('') || '<div style="color:var(--muted);font-size:13px;padding:8px 0">Pas encore de données — générez votre premier texte !</div>';
-
-    // Activity chart using Canvas
+    // Activity bars — 7 days
     const days7 = Array.from({length:7},(_,i)=>{
       const d = new Date(); d.setDate(d.getDate()-6+i);
-      return {
-        label:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'][d.getDay()],
-        count:history.filter(h=>new Date(h.createdAt).toDateString()===d.toDateString()).length
-      };
+      return {label:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'][d.getDay()],count:history.filter(h=>new Date(h.createdAt).toDateString()===d.toDateString()).length};
     });
 
-    document.getElementById('dash-day-labels').innerHTML = days7.map(d=>'<span class="dash-day-label">'+d.label+'</span>').join('');
-
     const canvas = document.getElementById('dash-activity-chart');
-    if(canvas){
+    if(canvas && typeof Chart !== 'undefined'){
       if(dashChart) dashChart.destroy();
-      const ctx = canvas.getContext('2d');
-      dashChart = new Chart(ctx, {
-        type:'bar',
-        data:{
+      dashChart = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
           labels: days7.map(d=>d.label),
           datasets:[{
             data: days7.map(d=>d.count),
-            backgroundColor: 'rgba(124,110,250,0.6)',
-            borderColor: '#7C6EFA',
+            backgroundColor: 'rgba(55,138,221,0.7)',
+            borderColor: '#378ADD',
             borderWidth: 1,
-            borderRadius: 4,
+            borderRadius: 3,
             borderSkipped: false
           }]
         },
         options:{
-          responsive:true,
-          maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y+' génération'+(ctx.parsed.y>1?'s':'')}}},
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+' génération'+(c.parsed.y>1?'s':'')}}},
           scales:{
-            x:{display:false},
+            x:{grid:{display:false},ticks:{font:{size:11},color:'#8888A8'}},
             y:{display:false,beginAtZero:true}
           }
         }
       });
+    }
+
+    // Format bars
+    const fmtEl = document.getElementById('dash-formats');
+    if(fmtEl){
+      const maxFmt = Math.max(...Object.values(formats), 1);
+      fmtEl.innerHTML = Object.entries(formats)
+        .sort((a,b)=>b[1]-a[1])
+        .map(([fmt,cnt])=>'<div class="dash-fmt-row"><span class="dash-fmt-name">'+(fmtNames[fmt]||fmt)+'</span><div class="dash-fmt-track"><div class="dash-fmt-fill" style="width:'+Math.round(cnt/maxFmt*100)+'%"></div></div><span class="dash-fmt-num">'+cnt+'</span></div>')
+        .join('') || '<div style="color:var(--muted);font-size:13px;padding:8px 0">Pas encore de données.</div>';
     }
 
   }catch(e){console.error('Dashboard error:',e);}
