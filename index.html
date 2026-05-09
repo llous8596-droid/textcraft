@@ -493,65 +493,78 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="ls" id="ls-bio3">Création des éléments...</div>
     </div>
     <div id="bio-results" style="display:none">
+      <style>
+        .bc{background:#1C1C26;border:1px solid #2A2A3A;border-radius:12px;padding:16px;margin-bottom:12px}
+        .bc-lbl{font-size:11px;font-weight:500;color:#8888A8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+        .bc-txt{background:#13131A;border-radius:8px;padding:12px;font-size:13px;line-height:1.7;color:#F0F0F8;border:1px solid #2A2A3A;white-space:pre-line;font-family:'DM Sans',sans-serif}
+        .bc-hint{font-size:11px;color:#8888A8;margin-top:5px;text-align:right}
+        .bc-copy{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #2A2A3A;background:transparent;color:#8888A8;cursor:pointer;font-family:'DM Sans',sans-serif}
+        .bc-copy:hover{border-color:#4EFAC8;color:#4EFAC8}
+        .bc-hl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+        .bc-hl-tag{padding:5px 12px;border-radius:8px;background:#13131A;border:1px solid #2A2A3A;font-size:12px;color:#F0F0F8;font-family:'DM Sans',sans-serif}
+        .bc-tips{list-style:none;margin-top:4px}
+        .bc-tips li{font-size:13px;color:#8888A8;padding:8px 0;border-bottom:1px solid #2A2A3A;display:flex;gap:8px;line-height:1.5;font-family:'DM Sans',sans-serif}
+        .bc-tips li:last-child{border-bottom:none}
+        .bc-tips li::before{content:'→';color:#7C6EFA;flex-shrink:0}
+        .ig-wrap{background:#fafafa;border:1px solid #dbdbdb;border-radius:10px;overflow:hidden;max-width:360px;margin:0 auto}
+        .ig-hdr{padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid #efefef}
+        .ig-av2{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);flex-shrink:0}
+        .ig-u{font-size:12px;font-weight:600;color:#000;font-family:system-ui,sans-serif}
+        .ig-bd{padding:10px 12px}
+        .ig-nm{font-size:13px;font-weight:600;color:#000;margin-bottom:3px;font-family:system-ui,sans-serif}
+        .ig-bi{font-size:12px;color:#000;line-height:1.5;margin-bottom:4px;white-space:pre-line;font-family:system-ui,sans-serif}
+        .ig-ct{font-size:12px;color:#00376b;font-family:system-ui,sans-serif}
+        .ig-hls2{display:flex;gap:10px;padding:8px 12px;border-top:0.5px solid #efefef}
+        .ig-hl2{display:flex;flex-direction:column;align-items:center;gap:3px}
+        .ig-circ{width:36px;height:36px;border-radius:50%;background:#efefef;border:1.5px solid #fff;outline:1px solid #dbdbdb}
+        .ig-hlbl{font-size:9px;color:#000;text-align:center;max-width:42px;font-family:system-ui,sans-serif}
+      </style>
 
-      <!-- APERCU INSTAGRAM EN HAUT -->
-      <div class="bio-card2" style="max-width:380px;margin:0 auto 20px">
-        <div class="bio-card2-title" style="justify-content:center;margin-bottom:14px">📱 Aperçu de votre profil Instagram</div>
-        <div class="ig-phone-mock">
-          <div class="ig-mock-bar">
-            <div class="ig-mock-avatar"></div>
-            <div class="ig-mock-user" id="ig-mock-user">@votrecompte</div>
+      <!-- APERCU INSTAGRAM -->
+      <div class="bc" style="text-align:center">
+        <div class="bc-lbl" style="justify-content:center;margin-bottom:14px">Aperçu de votre profil Instagram</div>
+        <div class="ig-wrap">
+          <div class="ig-hdr"><div class="ig-av2"></div><div class="ig-u" id="ig-mock-user">@votrecompte</div></div>
+          <div class="ig-bd">
+            <div class="ig-nm" id="ig-mock-name">Nom de page</div>
+            <div class="ig-bi" id="ig-mock-bio">Votre bio apparaîtra ici...</div>
+            <div class="ig-ct" id="ig-mock-cta"></div>
           </div>
-          <div class="ig-mock-body">
-            <div class="ig-mock-name" id="ig-mock-name">Nom de page</div>
-            <div class="ig-mock-bio" id="ig-mock-bio">Votre bio apparaîtra ici...</div>
-            <div class="ig-mock-cta" id="ig-mock-cta"></div>
-          </div>
-          <div class="ig-mock-highlights" id="ig-mock-highlights"></div>
+          <div class="ig-hls2" id="ig-mock-highlights"></div>
         </div>
       </div>
 
-      <!-- ELEMENTS A COPIER -->
-      <div class="bio-card2">
-        <div class="bio-card2-title"><span>📛 Nom de page recommandé</span></div>
-        <div class="bio-textbox" id="bio-res-nom"></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px" id="bio-res-handle"></div>
+      <div class="bc">
+        <div class="bc-lbl">Nom de page recommandé</div>
+        <div class="bc-txt" id="bio-res-nom"></div>
+        <div class="bc-hint" id="bio-res-handle"></div>
       </div>
 
-      <div class="bio-card2">
-        <div class="bio-card2-title">
-          <span>📝 Bio <span style="font-weight:400;color:var(--muted);font-size:11px">(150 caractères max)</span></span>
-          <button class="btn-copy" onclick="copyBioSection('bio-res-bio')">Copier</button>
-        </div>
-        <div class="bio-textbox" id="bio-res-bio"></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right" id="bio-char-count"></div>
+      <div class="bc">
+        <div class="bc-lbl"><span>Bio principale <span style="font-weight:400;font-size:10px">(150 caractères max)</span></span><button class="bc-copy" onclick="copyBioSection('bio-res-bio')">Copier</button></div>
+        <div class="bc-txt" id="bio-res-bio"></div>
+        <div class="bc-hint" id="bio-char-count"></div>
       </div>
 
-      <div class="bio-card2">
-        <div class="bio-card2-title">
-          <span>🔗 Texte du lien en bio</span>
-          <button class="btn-copy" onclick="copyBioSection('bio-res-cta')">Copier</button>
-        </div>
-        <div class="bio-textbox" id="bio-res-cta"></div>
+      <div class="bc">
+        <div class="bc-lbl"><span>Texte du lien en bio</span><button class="bc-copy" onclick="copyBioSection('bio-res-cta')">Copier</button></div>
+        <div class="bc-txt" id="bio-res-cta"></div>
       </div>
 
-      <div class="bio-card2">
-        <div class="bio-card2-title">⭕ Story Highlights recommandés</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:10px">Créez ces catégories dans vos Stories pour organiser votre profil</div>
-        <div class="bio-highlights" id="bio-res-highlights"></div>
+      <div class="bc">
+        <div class="bc-lbl">Story Highlights recommandés</div>
+        <div style="font-size:12px;color:#8888A8;margin-bottom:10px;font-family:'DM Sans',sans-serif">Créez ces catégories dans vos Stories</div>
+        <div class="bc-hl" id="bio-res-highlights"></div>
       </div>
 
-      <div class="bio-card2">
-        <div class="bio-card2-title">
-          <span>📌 Idée de post épinglé</span>
-          <button class="btn-copy" onclick="copyBioSection('bio-res-pinned')">Copier</button>
-        </div>
-        <div class="bio-textbox" id="bio-res-pinned"></div>
+      <div class="bc">
+        <div class="bc-lbl"><span>Idée de post épinglé</span><button class="bc-copy" onclick="copyBioSection('bio-res-pinned')">Copier</button></div>
+        <div class="bc-txt" id="bio-res-pinned"></div>
       </div>
 
-      <div class="bio-card2">
-        <div class="bio-card2-title">💡 Conseils pour votre secteur</div>
-        <ul class="bio-tips" id="bio-res-tips"></ul>
+      <div class="bc">
+        <div class="bc-lbl">Conseils pour votre secteur</div>
+        <ul class="bc-tips" id="bio-res-tips"></ul>
       </div>
 
       <button class="btn-gen" style="margin-top:8px" onclick="resetBio()">✍️ Générer un autre profil</button>
@@ -560,21 +573,29 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
 
   <!-- ===== DASHBOARD ===== -->
   <div id="page-dashboard" style="display:none">
-    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:24px">📈 Tableau de bord</div>
-
-    <!-- STATS -->
-    <div class="dash-stats-grid" id="dash-stats" style="margin-bottom:20px"></div>
-
-    <!-- ACTIVITE -->
-    <div class="dash-card" style="margin-bottom:16px">
-      <div class="dash-card-title">Activité des 7 derniers jours</div>
+    <style>
+      .dc{background:#13131A;border:1px solid #2A2A3A;border-radius:12px;padding:18px;margin-bottom:14px}
+      .dc-lbl{font-size:11px;font-weight:500;color:#8888A8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;font-family:'DM Sans',sans-serif}
+      .ds-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+      .ds-card{background:#1C1C26;border-radius:10px;padding:14px 16px}
+      .ds-val{font-size:26px;font-weight:500;color:#F0F0F8;margin-bottom:3px;font-family:'DM Sans',sans-serif}
+      .ds-lbl{font-size:12px;color:#8888A8;font-family:'DM Sans',sans-serif}
+      .df-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+      .df-name{font-size:12px;color:#8888A8;width:120px;flex-shrink:0;font-family:'DM Sans',sans-serif}
+      .df-track{flex:1;height:5px;background:#2A2A3A;border-radius:3px;overflow:hidden}
+      .df-fill{height:100%;border-radius:3px;background:#378ADD}
+      .df-num{font-size:12px;color:#8888A8;width:20px;text-align:right;font-family:'DM Sans',sans-serif}
+    </style>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:20px;color:#F0F0F8">Tableau de bord</div>
+    <div class="ds-grid" id="dash-stats"></div>
+    <div class="dc">
+      <div class="dc-lbl">Activité des 7 derniers jours</div>
       <div style="position:relative;height:160px">
         <canvas id="dash-activity-chart" role="img" aria-label="Activité des 7 derniers jours">Graphique d'activité quotidienne</canvas>
       </div>
     </div>
-
-    <div class="dash-card">
-      <div class="dash-card-title">Répartition par format</div>
+    <div class="dc">
+      <div class="dc-lbl">Répartition par format</div>
       <div id="dash-formats"></div>
     </div>
   </div>
@@ -1360,48 +1381,35 @@ async function generateBio(){
 }
 
 function renderBio(b){
-  // Text fields
-  const nom = document.getElementById('bio-res-nom');
-  const handle = document.getElementById('bio-res-handle');
-  const bio = document.getElementById('bio-res-bio');
-  const charCount = document.getElementById('bio-char-count');
-  const cta = document.getElementById('bio-res-cta');
-  const highlights = document.getElementById('bio-res-highlights');
-  const pinned = document.getElementById('bio-res-pinned');
-  const tips = document.getElementById('bio-res-tips');
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val||''; };
+  const setHtml = (id, val) => { const el=document.getElementById(id); if(el) el.innerHTML=val||''; };
 
-  if(nom) nom.textContent = b.nom_page || '';
-  if(handle) handle.textContent = b.handle_suggestion ? '💡 Handle suggéré : '+b.handle_suggestion : '';
-  if(bio) bio.textContent = b.bio || '';
+  set('bio-res-nom', b.nom_page);
+  set('bio-res-handle', b.handle_suggestion ? 'Handle suggéré : '+b.handle_suggestion : '');
+  set('bio-res-bio', b.bio);
   const bioLen = (b.bio||'').length;
-  if(charCount) charCount.textContent = bioLen+' / 150 caractères'+(bioLen>150?' ⚠️ Trop long !':'');
-  if(cta) cta.textContent = b.call_to_action || '';
-  if(highlights) highlights.innerHTML = (b.story_highlights||[]).map(h=>'<div class="bio-hl-tag">'+h+'</div>').join('');
-  if(pinned) pinned.textContent = b.post_pinne || '';
-  if(tips) tips.innerHTML = (b.tips||[]).map(t=>'<li>'+t+'</li>').join('');
+  set('bio-char-count', bioLen+' / 150 caractères'+(bioLen>150?' ⚠️ Trop long !':''));
+  set('bio-res-cta', b.call_to_action);
+  setHtml('bio-res-highlights', (b.story_highlights||[]).map(h=>'<div class="bc-hl-tag" style="padding:5px 12px;border-radius:8px;background:#13131A;border:1px solid #2A2A3A;font-size:12px;color:#F0F0F8;font-family:DM Sans,sans-serif">'+h+'</div>').join(''));
+  set('bio-res-pinned', b.post_pinne);
+  setHtml('bio-res-tips', (b.tips||[]).map(t=>'<li>'+t+'</li>').join(''));
 
   // Instagram preview
   const igHandle = (b.handle_suggestion||'votrecompte').replace('@','');
-  const igUser = document.getElementById('ig-mock-user');
-  const igName = document.getElementById('ig-mock-name');
-  const igBio = document.getElementById('ig-mock-bio');
-  const igCta = document.getElementById('ig-mock-cta');
-  const igHl = document.getElementById('ig-mock-highlights');
-
-  if(igUser) igUser.textContent = '@'+igHandle;
-  if(igName) igName.textContent = b.nom_page || '';
-  if(igBio) igBio.textContent = b.bio || '';
-  if(igCta) igCta.textContent = b.call_to_action || '';
-  if(igHl) igHl.innerHTML = (b.story_highlights||[]).slice(0,4).map(h=>
-    '<div class="ig-mock-hl"><div class="ig-mock-hl-circle"></div><div class="ig-mock-hl-label">'+h+'</div></div>'
-  ).join('');
+  set('ig-mock-user', '@'+igHandle);
+  set('ig-mock-name', b.nom_page);
+  set('ig-mock-bio', b.bio);
+  set('ig-mock-cta', b.call_to_action);
+  setHtml('ig-mock-highlights', (b.story_highlights||[]).slice(0,4).map(h=>
+    '<div class="ig-hl2"><div class="ig-circ"></div><div class="ig-hlbl">'+h+'</div></div>'
+  ).join(''));
 }
 
 function copyBioSection(id){
   const el=document.getElementById(id);if(!el)return;
   navigator.clipboard.writeText(el.textContent).then(()=>{
-    const btns=document.querySelectorAll('.btn-copy');
-    btns.forEach(b=>{if(b.getAttribute('onclick')?.includes(id)){b.textContent='Copié ✓';b.style.color='var(--green)';setTimeout(()=>{b.textContent='Copier';b.style.color='';},2000);}});
+    const allBtns=document.querySelectorAll('.bc-copy,.btn-copy');
+    allBtns.forEach(b=>{if(b.getAttribute('onclick')?.includes(id)){b.textContent='Copié ✓';b.style.color='#4EFAC8';setTimeout(()=>{b.textContent='Copier';b.style.color='';},2000);}});
   });
 }
 
@@ -1441,7 +1449,7 @@ async function loadDashboard(){
       {val: thisMonth, lbl: 'Ce mois-ci'},
       {val: Object.keys(formats).length, lbl: 'Formats utilisés'},
       {val: topFormat ? (fmtNames[topFormat[0]]||topFormat[0]) : '—', lbl: 'Format favori', small: true}
-    ].map(s=>'<div class="dash-stat2"><div class="dash-stat2-val"'+(s.small?' style="font-size:15px;margin-top:4px"':'')+'>'+s.val+'</div><div class="dash-stat2-lbl">'+s.lbl+'</div></div>').join('');
+    ].map(s=>'<div class="ds-card"><div class="ds-val"'+(s.small?' style="font-size:15px;margin-top:4px"':'')+'>'+s.val+'</div><div class="ds-lbl">'+s.lbl+'</div></div>').join('');
 
     // Activity bars — 7 days
     const days7 = Array.from({length:7},(_,i)=>{
@@ -1483,7 +1491,7 @@ async function loadDashboard(){
       const maxFmt = Math.max(...Object.values(formats), 1);
       fmtEl.innerHTML = Object.entries(formats)
         .sort((a,b)=>b[1]-a[1])
-        .map(([fmt,cnt])=>'<div class="dash-fmt-row"><span class="dash-fmt-name">'+(fmtNames[fmt]||fmt)+'</span><div class="dash-fmt-track"><div class="dash-fmt-fill" style="width:'+Math.round(cnt/maxFmt*100)+'%"></div></div><span class="dash-fmt-num">'+cnt+'</span></div>')
+        .map(([fmt,cnt])=>'<div class="df-row"><span class="df-name">'+(fmtNames[fmt]||fmt)+'</span><div class="df-track"><div class="df-fill" style="width:'+Math.round(cnt/maxFmt*100)+'%"></div></div><span class="df-num">'+cnt+'</span></div>')
         .join('') || '<div style="color:var(--muted);font-size:13px;padding:8px 0">Pas encore de données.</div>';
     }
 
