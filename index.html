@@ -849,7 +849,7 @@ function openModal(mode){
   setTimeout(() => document.getElementById('auth-email')?.focus(), 200);
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('visible');}
-function closeModalOutside(e){if(e.target.id==='modal-overlay')closeModal();}
+function closeModalOutside(e){/* Disabled - don't close on outside click */}
 function switchTab(mode){modalMode=mode;document.getElementById('tab-register').classList.toggle('active',mode==='register');document.getElementById('tab-login').classList.toggle('active',mode==='login');document.getElementById('modal-title').textContent=mode==='register'?'Créer un compte':'Se connecter';document.getElementById('modal-sub').textContent=mode==='register'?'Accédez à vos 5 générations gratuites':'Content de vous revoir !';document.getElementById('btn-auth').textContent=mode==='register'?'Créer mon compte':'Se connecter';document.getElementById('modal-err').classList.remove('visible');
   const fl=document.getElementById('forgot-link');if(fl)fl.style.display=mode==='login'?'block':'none';}
 async function submitAuth(){
