@@ -1290,7 +1290,12 @@ async function loadAccount(){
     if(data.plan==='pro'){
       const ts = document.getElementById('team-section');
       if(ts) ts.style.display = 'block';
-      renderTeam(data.team || []);
+      if(data.teamOwner){
+        // This user is a team member, not an owner
+        ts.innerHTML = '<h3>👥 Équipe</h3><div style="padding:14px;background:var(--surface2);border-radius:10px;font-size:13px;color:var(--muted);margin-top:12px">✅ Vous avez été ajouté par <strong style="color:var(--text)">'+data.teamOwner+'</strong><br><span style="font-size:12px">Votre accès Pro est géré par le propriétaire du compte.</span></div>';
+      } else {
+        renderTeam(data.team || []);
+      }
     }
   } catch(e){ console.error('loadAccount error:', e); }
 }
@@ -1306,13 +1311,40 @@ async function changePassword(){
   const newPwd=document.getElementById('pwd-new').value;
   const msg=document.getElementById('pwd-msg');
   if(!current||!newPwd){msg.textContent='Remplis les deux champs.';msg.style.color='var(--accent2)';msg.style.display='block';return;}
+  if(!authToken){msg.textContent='Session expirée. Déconnectez-vous et reconnectez-vous.';msg.style.color='var(--accent2)';msg.style.display='block';return;}
+  if(newPwd.length < 6){msg.textContent='Le nouveau mot de passe doit faire au moins 6 caractères.';msg.style.color='var(--accent2)';msg.style.display='block';return;}
+  const btn = document.querySelector('#page-account .btn-gen');
+  if(btn){btn.disabled=true;btn.textContent='Changement...';}
   try{
-    const res=await fetch('/api/profile?action=change-password',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({currentPassword:current,newPassword:newPwd})});
+    const res=await fetch('/api/profile?action=change-password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+      body:JSON.stringify({currentPassword:current,newPassword:newPwd})
+    });
     const data=await res.json();
-    if(!res.ok){msg.textContent=data.error||'Erreur';msg.style.color='var(--accent2)';}
-    else{msg.textContent='Mot de passe change !';msg.style.color='var(--green)';document.getElementById('pwd-current').value='';document.getElementById('pwd-new').value='';}
+    if(!res.ok){
+      if(res.status===401){
+        msg.textContent='Session expirée. Déconnectez-vous et reconnectez-vous.';
+        // Auto logout
+        setTimeout(()=>logout(), 2000);
+      } else {
+        msg.textContent=data.error||'Erreur';
+      }
+      msg.style.color='var(--accent2)';
+    } else {
+      msg.textContent='✅ Mot de passe changé avec succès !';
+      msg.style.color='var(--green)';
+      document.getElementById('pwd-current').value='';
+      document.getElementById('pwd-new').value='';
+    }
     msg.style.display='block';
-  }catch(e){msg.textContent='Erreur de connexion.';msg.style.color='var(--accent2)';msg.style.display='block';}
+  }catch(e){
+    msg.textContent='Erreur de connexion.';
+    msg.style.color='var(--accent2)';
+    msg.style.display='block';
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Changer le mot de passe';}
+  }
 }
 
 async function addTeamMember(){

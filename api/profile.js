@@ -41,9 +41,10 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // ADD TEAM MEMBER (Pro only)
+  // ADD TEAM MEMBER (Pro only, only owners can add)
   if (action === 'add-member' && req.method === 'POST') {
     if (user.plan !== 'pro') return res.status(403).json({ error: 'Fonctionnalité Pro uniquement' });
+    if (user.teamOwner) return res.status(403).json({ error: 'Seul le propriétaire du compte peut gérer l\'équipe.' });
     const { memberEmail } = req.body;
     if (!memberEmail) return res.status(400).json({ error: 'Email requis' });
 
