@@ -186,16 +186,19 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   </div>
 </nav>
 
-<div class="mode-switcher">
-  <button class="mode-btn active" id="mode-content" onclick="switchMode('content')"><span class="mode-icon">✦</span> Créer du contenu</button>
-  <button class="mode-btn" id="mode-reputation" onclick="switchMode('reputation')"><span class="mode-icon">⭐</span> Réputation</button>
-  <button class="mode-btn" id="mode-calendar" onclick="switchMode('calendar')"><span class="mode-icon">📅</span> Calendrier Pro</button>
-  <button class="mode-btn" id="mode-instagram" onclick="switchMode('instagram')"><span class="mode-icon">📊</span> Analyse Instagram</button>
-  <button class="mode-btn" id="mode-suggestions" onclick="switchMode('suggestions')"><span class="mode-icon">💡</span> Idées de posts</button>
-  <button class="mode-btn" id="mode-history" onclick="switchMode('history')"><span class="mode-icon">🕐</span> Historique</button>
-  <button class="mode-btn" id="mode-account" onclick="switchMode('account')"><span class="mode-icon">👤</span> Mon compte</button>
-  <button class="mode-btn" id="mode-bio" onclick="switchMode('bio')"><span class="mode-icon">✍️</span> Bio Instagram</button>
-  <button class="mode-btn" id="mode-dashboard" onclick="switchMode('dashboard')"><span class="mode-icon">📈</span> Dashboard</button>
+<div style="max-width:900px;margin:20px auto 0;padding:0 24px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+    <button class="mode-btn active" id="mode-content" onclick="switchMode('content')">✦ Créer</button>
+    <button class="mode-btn" id="mode-suggestions" onclick="switchMode('suggestions')">💡 Idées</button>
+    <button class="mode-btn" id="mode-calendar" onclick="switchMode('calendar')">📅 Calendrier</button>
+    <button class="mode-btn" id="mode-reputation" onclick="switchMode('reputation')">⭐ Réputation</button>
+    <button class="mode-btn" id="mode-instagram" onclick="switchMode('instagram')">📊 Analyse Insta</button>
+    <button class="mode-btn" id="mode-bio" onclick="switchMode('bio')">✍️ Bio Insta</button>
+    <div style="flex:1"></div>
+    <button class="mode-btn" id="mode-history" onclick="switchMode('history')" style="font-size:12px;opacity:.7">🕐</button>
+    <button class="mode-btn" id="mode-dashboard" onclick="switchMode('dashboard')" style="font-size:12px;opacity:.7">📈</button>
+    <button class="mode-btn" id="mode-account" onclick="switchMode('account')" style="font-size:12px;opacity:.7">👤</button>
+  </div>
 </div>
 
 <div class="main">
@@ -601,7 +604,7 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
   </div>
 
 
-<footer>TextCraft — Conçu pour les petites entreprises françaises</footer>
+<footer>TextCraft — Conçu pour les petites entreprises françaises &nbsp;·&nbsp; <a href="/legal.html" style="color:var(--muted);text-decoration:none">Mentions légales</a> &nbsp;·&nbsp; <a href="/legal.html#cgv" style="color:var(--muted);text-decoration:none">CGV</a> &nbsp;·&nbsp; <a href="/legal.html#confidentialite" style="color:var(--muted);text-decoration:none">Confidentialité</a> &nbsp;·&nbsp; <a href="mailto:llous8596@gmail.com" style="color:var(--muted);text-decoration:none">Contact</a></footer>
 
 <!-- POST DETAIL MODAL -->
 <div class="post-modal" id="post-modal" onclick="closePostModal(event)">

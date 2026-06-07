@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales — TextCraft</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0A0F;--surface:#13131A;--border:#2A2A3A;--accent:#7C6EFA;--text:#F0F0F8;--muted:#8888A8;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.7}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border)}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(135deg,#7C6EFA,#FA6E9A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.main{max-width:720px;margin:0 auto;padding:48px 24px 80px}
+.tabs{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:10px;border:1px solid var(--border);margin-bottom:40px;flex-wrap:wrap}
+.tab{flex:1;padding:9px;text-align:center;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:transparent;font-family:'DM Sans',sans-serif;min-width:120px}
+.tab.active{background:#1C1C26;color:var(--text);border:1px solid var(--border)}
+.page{display:none}.page.active{display:block}
+h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:8px}
+h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin:28px 0 10px;color:var(--text)}
+p{color:var(--muted);font-size:14px;margin-bottom:12px}
+ul{color:var(--muted);font-size:14px;padding-left:20px;margin-bottom:12px}
+ul li{margin-bottom:6px}
+.date{font-size:12px;color:#555;margin-bottom:32px}
+a{color:var(--accent)}
+strong{color:var(--text)}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">TextCraft</a>
+  <a href="/" style="font-size:13px;color:var(--muted);text-decoration:none">← Retour</a>
+</nav>
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('mentions')">Mentions légales</button>
+    <button class="tab" onclick="showTab('cgv')">CGV</button>
+    <button class="tab" onclick="showTab('confidentialite')">Confidentialité</button>
+  </div>
+
+  <!-- MENTIONS LEGALES -->
+  <div class="page active" id="page-mentions">
+    <h1>Mentions légales</h1>
+    <p class="date">Dernière mise à jour : juin 2025</p>
+
+    <h2>Éditeur du site</h2>
+    <p>
+      <strong>Nom :</strong> El-mehdi FARES<br>
+      <strong>Statut :</strong> Personne physique (en cours d'immatriculation)<br>
+      <strong>Email :</strong> <a href="mailto:llous8596@gmail.com">llous8596@gmail.com</a><br>
+      <strong>Site :</strong> textcraft-sigma.vercel.app
+    </p>
+
+    <h2>Hébergement</h2>
+    <p>
+      <strong>Vercel Inc.</strong><br>
+      340 Pine Street, Suite 701<br>
+      San Francisco, CA 94104, États-Unis<br>
+      <a href="https://vercel.com" target="_blank">vercel.com</a>
+    </p>
+
+    <h2>Directeur de la publication</h2>
+    <p>El-mehdi FARES</p>
+
+    <h2>Propriété intellectuelle</h2>
+    <p>L'ensemble du contenu de ce site (textes, visuels, code) est la propriété exclusive de El-mehdi FARES. Toute reproduction ou représentation, totale ou partielle, est interdite sans autorisation préalable.</p>
+
+    <h2>Limitation de responsabilité</h2>
+    <p>TextCraft est un outil d'aide à la rédaction basé sur l'intelligence artificielle. Les textes générés sont fournis à titre indicatif et doivent être vérifiés par l'utilisateur avant toute publication. L'éditeur ne saurait être tenu responsable de l'usage fait des contenus générés.</p>
+  </div>
+
+  <!-- CGV -->
+  <div class="page" id="page-cgv">
+    <h1>Conditions Générales de Vente</h1>
+    <p class="date">Dernière mise à jour : juin 2025</p>
+
+    <h2>1. Objet</h2>
+    <p>Les présentes CGV régissent les relations contractuelles entre El-mehdi FARES (ci-après "TextCraft") et tout utilisateur souscrivant à un abonnement payant sur le site textcraft-sigma.vercel.app.</p>
+
+    <h2>2. Services proposés</h2>
+    <p>TextCraft propose un service de génération de contenus marketing par intelligence artificielle, accessible via abonnement mensuel :</p>
+    <ul>
+      <li><strong>Plan Gratuit :</strong> 5 générations par mois, sans engagement</li>
+      <li><strong>Plan Pro :</strong> 9€ TTC par mois, générations illimitées, résiliable à tout moment</li>
+    </ul>
+
+    <h2>3. Prix et paiement</h2>
+    <p>Les prix sont indiqués en euros TTC. Le paiement est effectué par carte bancaire via Stripe, prestataire de paiement sécurisé. L'abonnement est prélevé mensuellement à la date de souscription.</p>
+
+    <h2>4. Droit de rétractation</h2>
+    <p>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne peut être exercé pour les contenus numériques fournis immédiatement après la souscription. Toutefois, TextCraft offre la possibilité de résilier l'abonnement à tout moment depuis l'espace personnel.</p>
+
+    <h2>5. Résiliation</h2>
+    <p>L'abonnement Pro peut être résilié à tout moment depuis votre compte. La résiliation prend effet à la fin de la période de facturation en cours. Aucun remboursement partiel ne sera effectué.</p>
+
+    <h2>6. Disponibilité du service</h2>
+    <p>TextCraft s'efforce d'assurer la disponibilité du service 24h/24 et 7j/7. Des interruptions de service peuvent survenir pour maintenance ou en cas de force majeure. Aucun remboursement ne sera effectué pour des interruptions temporaires.</p>
+
+    <h2>7. Données personnelles</h2>
+    <p>Les données collectées lors de la souscription sont utilisées uniquement pour la gestion de l'abonnement. Consultez notre Politique de confidentialité pour plus d'informations.</p>
+
+    <h2>8. Droit applicable</h2>
+    <p>Les présentes CGV sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant tout recours judiciaire.</p>
+
+    <h2>9. Contact</h2>
+    <p>Pour toute question : <a href="mailto:llous8596@gmail.com">llous8596@gmail.com</a></p>
+  </div>
+
+  <!-- CONFIDENTIALITE -->
+  <div class="page" id="page-confidentialite">
+    <h1>Politique de confidentialité</h1>
+    <p class="date">Dernière mise à jour : juin 2025</p>
+
+    <h2>1. Responsable du traitement</h2>
+    <p>El-mehdi FARES — <a href="mailto:llous8596@gmail.com">llous8596@gmail.com</a></p>
+
+    <h2>2. Données collectées</h2>
+    <p>Lors de l'utilisation de TextCraft, nous collectons :</p>
+    <ul>
+      <li><strong>Adresse email</strong> : pour la création de compte et l'authentification</li>
+      <li><strong>Mot de passe</strong> : stocké de manière chiffrée (hachage SHA-256)</li>
+      <li><strong>Informations business</strong> : nom, secteur, description (pour la génération de contenus)</li>
+      <li><strong>Historique de générations</strong> : conservé 90 jours</li>
+      <li><strong>Données de paiement</strong> : gérées exclusivement par Stripe (nous ne stockons aucune donnée bancaire)</li>
+    </ul>
+
+    <h2>3. Finalités du traitement</h2>
+    <ul>
+      <li>Gestion des comptes utilisateurs</li>
+      <li>Fourniture du service de génération de contenus</li>
+      <li>Facturation et gestion des abonnements</li>
+      <li>Envoi d'emails transactionnels (confirmation, mot de passe)</li>
+    </ul>
+
+    <h2>4. Base légale</h2>
+    <p>Le traitement est fondé sur l'exécution du contrat (article 6.1.b du RGPD) pour la fourniture du service, et sur le consentement pour les communications marketing.</p>
+
+    <h2>5. Durée de conservation</h2>
+    <ul>
+      <li>Données de compte : durée de l'abonnement + 3 ans</li>
+      <li>Historique de générations : 90 jours glissants</li>
+      <li>Données de facturation : 10 ans (obligation légale)</li>
+    </ul>
+
+    <h2>6. Partage des données</h2>
+    <p>Vos données ne sont jamais vendues. Elles peuvent être partagées avec :</p>
+    <ul>
+      <li><strong>Stripe</strong> : paiement sécurisé</li>
+      <li><strong>Anthropic</strong> : traitement IA des requêtes (les textes générés ne sont pas associés à votre identité)</li>
+      <li><strong>Upstash</strong> : hébergement de la base de données (serveurs en Europe)</li>
+      <li><strong>Brevo</strong> : envoi d'emails transactionnels</li>
+    </ul>
+
+    <h2>7. Vos droits (RGPD)</h2>
+    <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+    <ul>
+      <li>Droit d'accès à vos données</li>
+      <li>Droit de rectification</li>
+      <li>Droit à l'effacement ("droit à l'oubli")</li>
+      <li>Droit à la portabilité</li>
+      <li>Droit d'opposition</li>
+    </ul>
+    <p>Pour exercer ces droits : <a href="mailto:llous8596@gmail.com">llous8596@gmail.com</a></p>
+
+    <h2>8. Cookies</h2>
+    <p>TextCraft n'utilise pas de cookies de tracking ou publicitaires. Seuls des tokens d'authentification (localStorage) sont utilisés pour maintenir votre session.</p>
+
+    <h2>9. Contact DPO</h2>
+    <p>Pour toute question relative à vos données personnelles : <a href="mailto:llous8596@gmail.com">llous8596@gmail.com</a></p>
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach((b,i) => {
+    b.classList.toggle('active', ['mentions','cgv','confidentialite'][i] === tab);
+  });
+  document.querySelectorAll('.page').forEach((p,i) => {
+    p.classList.toggle('active', ['page-mentions','page-cgv','page-confidentialite'][i] === 'page-'+tab);
+  });
+}
+
+// Handle URL hash
+if(location.hash) showTab(location.hash.slice(1));
+</script>
+</body>
+</html>
