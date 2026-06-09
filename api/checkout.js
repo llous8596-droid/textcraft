@@ -27,6 +27,34 @@ export default async function handler(req, res) {
 
   const siteUrl = process.env.SITE_URL || 'https://textcraft-sigma.vercel.app';
 
+  // BILLING PORTAL - gérer/résilier l'abonnement
+  if (req.query.action === 'portal') {
+    const { kvGet } = await import('./_kv.js');
+    const user = await kvGet(`user:${payload.email}`);
+    if (!user?.stripeCustomerId) {
+      return res.status(400).json({ error: 'Aucun abonnement actif trouvé.' });
+    }
+    try {
+      const r = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${stripeKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          customer: user.stripeCustomerId,
+          return_url: siteUrl + '/?tab=account'
+        })
+      });
+      const s = await r.json();
+      if (s.error) throw new Error(s.error.message);
+      return res.status(200).json({ url: s.url });
+    } catch(e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  // CHECKOUT - nouvel abonnement
   try {
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -44,12 +72,10 @@ export default async function handler(req, res) {
         'metadata[email]': payload.email
       })
     });
-
     const session = await response.json();
     if (session.error) throw new Error(session.error.message);
     return res.status(200).json({ url: session.url });
-
-  } catch (e) {
+  } catch(e) {
     return res.status(500).json({ error: e.message });
   }
 }

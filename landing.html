@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TextCraft — Vos textes marketing générés par IA en 10 secondes</title>
+<meta name="description" content="TextCraft génère vos posts Instagram, emails clients et fiches produits en 10 secondes grâce à l'IA. Conçu pour les artisans, commerçants et TPE françaises.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0A0A0F;--surface:#13131A;--surface2:#1C1C26;--border:#2A2A3A;--accent:#7C6EFA;--accent2:#FA6E9A;--text:#F0F0F8;--muted:#8888A8;--green:#4EFAC8;}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,15,0.95);backdrop-filter:blur(12px);z-index:100}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.btn-cta{padding:10px 24px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
+.btn-cta:hover{opacity:.9;transform:translateY(-1px)}
+.btn-ghost{padding:10px 20px;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:14px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* HERO */
+.hero{padding:100px 48px 80px;text-align:center;max-width:900px;margin:0 auto;position:relative}
+.hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(124,110,250,.12),transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;background:rgba(124,110,250,.1);border:1px solid rgba(124,110,250,.3);border-radius:20px;font-size:13px;color:var(--accent);margin-bottom:24px}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:800;line-height:1.05;margin-bottom:20px}
+h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{color:var(--muted);font-size:18px;max-width:520px;margin:0 auto 36px;line-height:1.7}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.hero-note{font-size:13px;color:var(--muted)}
+
+/* PROOF BAR */
+.proof{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 48px;display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.proof-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.proof-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text)}
+
+/* SECTIONS */
+section{padding:80px 48px;max-width:1100px;margin:0 auto}
+.section-badge{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:12px}
+h2{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,42px);font-weight:800;line-height:1.15;margin-bottom:16px}
+h2 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:var(--muted);font-size:16px;line-height:1.7;max-width:560px;margin-bottom:48px}
+
+/* PROBLEM */
+.problems{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.problem{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px}
+.problem-icon{font-size:24px;margin-bottom:10px}
+.problem-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:8px}
+.problem-text{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.step-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;margin-bottom:14px}
+.step-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px}
+.step-text{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* EXAMPLES */
+.ex-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.ex-tab{padding:8px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.ex-tab.active{background:rgba(124,110,250,.15);border-color:var(--accent);color:var(--accent)}
+.ex-card{display:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;animation:fadeUp .3s ease}
+.ex-card.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ex-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ex-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:16px}
+.ex-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:4px 10px;border-radius:20px;background:rgba(124,110,250,.15);color:var(--accent);border:1px solid rgba(124,110,250,.3);margin-left:auto}
+.ex-text{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;background:var(--surface2);padding:16px;border-radius:10px;border:1px solid var(--border)}
+.ex-meta{display:flex;gap:16px;margin-top:14px;font-size:12px;color:var(--muted)}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:680px;margin:0 auto}
+.plan{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px}
+.plan.featured{border-color:var(--accent);border-width:1.5px;position:relative}
+.popular{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;white-space:nowrap}
+.plan-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:8px;color:var(--muted)}
+.plan-price{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:4px}
+.plan-period{font-size:14px;color:var(--muted);margin-bottom:24px}
+.plan-feats{list-style:none;margin-bottom:28px}
+.plan-feats li{font-size:14px;padding:8px 0;border-bottom:1px solid var(--border);color:var(--muted);display:flex;align-items:center;gap:10px}
+.plan-feats li:last-child{border-bottom:none}
+.check{color:var(--green)}
+.btn-plan{width:100%;padding:14px;border-radius:10px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:block;text-align:center;transition:all .2s}
+.btn-plan.ghost{border:1px solid var(--border);background:transparent;color:var(--muted)}
+.btn-plan.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-plan.filled{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff}
+.btn-plan.filled:hover{opacity:.9;transform:translateY(-1px)}
+
+/* FAQ */
+.faq{max-width:700px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0;cursor:pointer}
+.faq-q{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-arrow{color:var(--muted);transition:transform .2s}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px}
+
+/* CTA FINAL */
+.cta-final{text-align:center;padding:100px 48px;position:relative}
+.cta-final::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(124,110,250,.1),transparent 70%);pointer-events:none}
+.cta-final h2{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.1;margin-bottom:16px}
+.cta-final p{color:var(--muted);font-size:17px;margin-bottom:36px}
+
+footer{text-align:center;padding:32px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--accent)}
+
+@media(max-width:700px){nav,section,.hero,.cta-final{padding-left:20px;padding-right:20px}.steps-grid{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}.proof{gap:20px;padding:16px 20px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">TextCraft</div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <a href="/?tab=login" class="btn-ghost">Connexion</a>
+    <a href="/" class="btn-cta">Essayer gratuitement →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="badge"><div class="badge-dot"></div>Outil IA pour les commerçants français</div>
+  <h1>Fini les heures perdues<br>à <span>rédiger vos textes</span></h1>
+  <p class="hero-sub">Posts Instagram, emails clients, fiches produits — l'IA écrit à votre place en 10 secondes. Conçu pour les artisans, commerçants et TPE.</p>
+  <div class="hero-btns">
+    <a href="/" class="btn-cta" style="font-size:16px;padding:16px 36px">Essayer gratuitement — 5 textes offerts</a>
+    <a href="#exemples" class="btn-ghost" style="padding:16px 24px">Voir des exemples</a>
+  </div>
+  <p class="hero-note">Aucune carte bancaire · Résultat en 10 secondes · Sans compétences techniques</p>
+</div>
+
+<div class="proof">
+  <div class="proof-item"><span>⚡</span><span><span class="proof-val">10 sec</span> par texte</span></div>
+  <div class="proof-item"><span>✦</span><span><span class="proof-val">8 formats</span> disponibles</span></div>
+  <div class="proof-item"><span>🇫🇷</span><span><span class="proof-val">Français</span> natif</span></div>
+  <div class="proof-item"><span>🔒</span><span><span class="proof-val">100%</span> sécurisé</span></div>
+</div>
+
+<!-- PROBLEME -->
+<section>
+  <div class="section-badge">Le problème</div>
+  <h2>Vous avez un super business.<br>Mais <span>pas le temps d'écrire.</span></h2>
+  <p class="sub">Entre le service, les clients et la gestion, rédiger du contenu marketing passe toujours après. Résultat : une présence digitale inexistante et des clients qui vous oublient.</p>
+  <div class="problems">
+    <div class="problem"><div class="problem-icon">⏰</div><div class="problem-title">1h par post en moyenne</div><div class="problem-text">Trouver l'idée, rédiger, corriger, choisir les hashtags... Une heure pour un simple post Instagram.</div></div>
+    <div class="problem"><div class="problem-icon">😓</div><div class="problem-title">La page blanche</div><div class="problem-text">On sait ce qu'on veut dire, mais les mots ne viennent pas. Alors on reporte, et on finit par ne rien poster.</div></div>
+    <div class="problem"><div class="problem-icon">📉</div><div class="problem-title">Des clients qui vous oublient</div><div class="problem-text">Sans présence régulière, vos clients choisissent le concurrent qui poste tous les jours.</div></div>
+  </div>
+</section>
+
+<!-- COMMENT CA MARCHE -->
+<section style="background:var(--surface);border-radius:24px;padding:64px 48px;margin:0 48px">
+  <div class="section-badge">Comment ça marche</div>
+  <h2>Prêt en <span>3 étapes</span></h2>
+  <p class="sub" style="margin-bottom:40px">Pas besoin de formation. Si vous savez envoyer un SMS, vous savez utiliser TextCraft.</p>
+  <div class="steps-grid">
+    <div><div class="step-num">1</div><div class="step-title">Décrivez votre business</div><div class="step-text">Entrez le nom, votre secteur et une courte description. Une seule fois — TextCraft s'en souvient.</div></div>
+    <div><div class="step-num">2</div><div class="step-title">Choisissez le format</div><div class="step-text">Post Instagram, email client, fiche produit, bio, SMS promo ou réponse avis Google.</div></div>
+    <div><div class="step-num">3</div><div class="step-title">Copiez-collez</div><div class="step-text">Votre texte est prêt en 10 secondes. Copiez, publiez, c'est fait.</div></div>
+  </div>
+</section>
+
+<!-- EXEMPLES -->
+<section id="exemples">
+  <div class="section-badge">Exemples réels</div>
+  <h2>Ce que TextCraft <span>génère pour vous</span></h2>
+  <p class="sub">Des textes vraiment écrits pour votre activité, pas des templates génériques.</p>
+  <div class="ex-tabs">
+    <button class="ex-tab active" onclick="showEx(0)">🥐 Boulangerie</button>
+    <button class="ex-tab" onclick="showEx(1)">🍝 Restaurant</button>
+    <button class="ex-tab" onclick="showEx(2)">✂️ Salon</button>
+    <button class="ex-tab" onclick="showEx(3)">🎯 Coach</button>
+  </div>
+  <div class="ex-card active" id="ex-0">
+    <div class="ex-header"><div class="ex-avatar">🥐</div><div><div style="font-size:14px;font-weight:500">Boulangerie Dupont · Paris 11e</div><div style="font-size:12px;color:var(--muted)">Boulangerie artisanale</div></div><div class="ex-tag">Post Instagram</div></div>
+    <div class="ex-text">🌾 Le secret d'un bon pain ? Du temps, de l'amour et un levain de 30 ans.
+
+Chez Dupont, chaque miche est pétrie à la main chaque matin depuis 1985. Pas de raccourcis, pas d'additifs — juste la vraie boulangerie comme avant.
+
+Ce weekend : notre pain de campagne au seigle revient en quantité limitée. Soyez là tôt ! 🍞
+
+📍 12 rue de la Roquette, Paris 11e
+⏰ Ouvert 7j/7 de 7h à 19h30
+
+#boulangerieparis #painartisanal #levain #paris11 #faitmaison</div>
+    <div class="ex-meta"><span>⚡ Généré en 8 secondes</span><span>🎯 Ton chaleureux</span></div>
+  </div>
+  <div class="ex-card" id="ex-1">
+    <div class="ex-header"><div class="ex-avatar">🍝</div><div><div style="font-size:14px;font-weight:500">Trattoria Bella · Paris 9e</div><div style="font-size:12px;color:var(--muted)">Restaurant italien</div></div><div class="ex-tag">Email client</div></div>
+    <div class="ex-text">Objet : Une surprise vous attend ce weekend chez Trattoria Bella 🍝
+
+Caro cliente,
+
+Le printemps est là, et avec lui notre nouvelle carte saisonnière !
+
+Notre chef a concocté un risotto aux asperges et truffe noire qui fait déjà l'unanimité. Accompagné d'un verre de Barolo sélectionné par nos soins, c'est un voyage en Italie garanti.
+
+🎁 Offre spéciale : mentionnez cet email et bénéficiez d'un tiramisu offert pour 2 personnes ce weekend.
+
+Réservation : 01 42 XX XX XX
+
+À très vite,
+L'équipe Trattoria Bella</div>
+    <div class="ex-meta"><span>⚡ Généré en 11 secondes</span><span>🎯 Ton professionnel</span></div>
+  </div>
+  <div class="ex-card" id="ex-2">
+    <div class="ex-header"><div class="ex-avatar">✂️</div><div><div style="font-size:14px;font-weight:500">Studio Léa · Paris 17e</div><div style="font-size:12px;color:var(--muted)">Salon de coiffure</div></div><div class="ex-tag">SMS promo</div></div>
+    <div class="ex-text">Studio Léa : Avril = mois du soin ! 🌸 Couleur + soin offert pour tout rdv avant le 30/04. Réservez vite : studioleaparis.fr ou 01 43 XX XX XX</div>
+    <div class="ex-meta"><span>⚡ Généré en 6 secondes</span><span>🎯 Ton fun</span></div>
+  </div>
+  <div class="ex-card" id="ex-3">
+    <div class="ex-header"><div class="ex-avatar">🎯</div><div><div style="font-size:14px;font-weight:500">Marie Martin · Coach de vie</div><div style="font-size:12px;color:var(--muted)">Coach certifiée</div></div><div class="ex-tag">Bio Instagram</div></div>
+    <div class="ex-text">✨ Coach certifiée | Burnout → Épanouissement
+🎯 J'aide les femmes à reprendre le contrôle de leur vie
+📩 Programme 3 mois → lien en bio
+⬇️ Transformez votre quotidien</div>
+    <div class="ex-meta"><span>⚡ Généré en 5 secondes</span><span>🎯 Ton professionnel</span></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section style="text-align:center">
+  <div class="section-badge" style="text-align:center">Tarifs</div>
+  <h2 style="text-align:center">Simple et <span>transparent</span></h2>
+  <p class="sub" style="margin:0 auto 48px">Commencez gratuitement, upgradez quand vous êtes convaincu.</p>
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Gratuit</div>
+      <div class="plan-price">0€</div>
+      <div class="plan-period">pour toujours</div>
+      <ul class="plan-feats">
+        <li><span class="check">✓</span> 5 générations par mois</li>
+        <li><span class="check">✓</span> Tous les formats</li>
+        <li><span class="check">✓</span> Sans carte bancaire</li>
+      </ul>
+      <a href="/" class="btn-plan ghost">Commencer gratuitement</a>
+    </div>
+    <div class="plan featured">
+      <div class="popular">Le plus populaire</div>
+      <div class="plan-name" style="color:var(--accent)">Pro ✦</div>
+      <div class="plan-price">9€</div>
+      <div class="plan-period">par mois · résiliable à tout moment</div>
+      <ul class="plan-feats">
+        <li><span class="check">✓</span> Générations illimitées</li>
+        <li><span class="check">✓</span> Tous les formats</li>
+        <li><span class="check">✓</span> Calendrier 30 posts/mois</li>
+        <li><span class="check">✓</span> Analyse Instagram</li>
+        <li><span class="check">✓</span> Historique complet</li>
+      </ul>
+      <a href="/" class="btn-plan filled">Passer Pro →</a>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:20px">Moins cher qu'un café par semaine.</p>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="section-badge" style="text-align:center">Questions fréquentes</div>
+  <h2 style="text-align:center;margin-bottom:40px">Tout ce que vous <span>voulez savoir</span></h2>
+  <div class="faq">
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Les textes générés sont-ils vraiment bons ? <span class="faq-arrow">▾</span></div><div class="faq-a">Oui. TextCraft utilise Claude, l'IA d'Anthropic — la même technologie utilisée par les plus grandes entreprises du monde. Les textes sont adaptés à votre activité, votre secteur et votre ton. La plupart des utilisateurs les publient tels quels.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Je ne suis pas à l'aise avec la technologie, c'est compliqué ? <span class="faq-arrow">▾</span></div><div class="faq-a">Pas du tout. Si vous savez envoyer un SMS, vous savez utiliser TextCraft. Vous remplissez 3 champs, vous cliquez sur un bouton. C'est tout. Aucune compétence technique requise.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Puis-je annuler à tout moment ? <span class="faq-arrow">▾</span></div><div class="faq-a">Oui, sans conditions et sans frais. Vous pouvez annuler en un clic depuis votre espace "Mon compte". Aucun engagement de durée.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Les textes sont-ils uniques ? <span class="faq-arrow">▾</span></div><div class="faq-a">Chaque texte est généré spécifiquement pour vous. Deux boulangeries différentes obtiendront deux textes différents. Il n'y a pas de templates recyclés.</div></div>
+    <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Mes données sont-elles sécurisées ? <span class="faq-arrow">▾</span></div><div class="faq-a">Oui. Vos données sont chiffrées, stockées en Europe, et ne sont jamais revendues. Nous utilisons Stripe pour les paiements — l'un des systèmes les plus sécurisés au monde. Consultez notre politique de confidentialité pour plus de détails.</div></div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<div class="cta-final">
+  <h2>Prêt à gagner<br><span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">des heures chaque semaine ?</span></h2>
+  <p>5 textes gratuits, aucune carte requise. Résultat en 10 secondes.</p>
+  <a href="/" class="btn-cta" style="font-size:16px;padding:16px 40px">Essayer TextCraft gratuitement →</a>
+</div>
+
+<footer>
+  TextCraft — Conçu pour les petites entreprises françaises &nbsp;·&nbsp;
+  <a href="/legal.html">Mentions légales</a> &nbsp;·&nbsp;
+  <a href="/legal.html#cgv">CGV</a> &nbsp;·&nbsp;
+  <a href="/legal.html#confidentialite">Confidentialité</a> &nbsp;·&nbsp;
+  <a href="mailto:llous8596@gmail.com">Contact</a>
+</footer>
+
+<script>
+function showEx(i){
+  document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.ex-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ex-'+i).classList.add('active');
+  document.querySelectorAll('.ex-tab')[i].classList.add('active');
+}
+function toggleFaq(el){el.classList.toggle('open');}
+</script>
+</body>
+</html>

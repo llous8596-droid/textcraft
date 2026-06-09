@@ -440,6 +440,13 @@ footer{text-align:center;padding:28px;color:var(--muted);font-size:12px;border-t
       <div class="info-row"><span class="info-label">Crédits restants</span><span class="info-val" id="acc-credits">—</span></div>
       <div class="info-row"><span class="info-label">Membre depuis</span><span class="info-val" id="acc-since">—</span></div>
     </div>
+    <!-- GESTION ABONNEMENT - shown only for Pro -->
+    <div class="account-section" id="billing-section" style="display:none">
+      <h3>💳 Mon abonnement</h3>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px">Gérez votre abonnement, modifiez votre moyen de paiement ou résiliez depuis le portail Stripe sécurisé.</p>
+      <button class="btn-gen" onclick="openBillingPortal()" style="max-width:300px">Gérer mon abonnement →</button>
+    </div>
+
     <div class="account-section">
       <h3>🔒 Changer de mot de passe</h3>
       <div class="field"><label>Mot de passe actuel</label><input type="password" id="pwd-current" placeholder="Votre mot de passe actuel"></div>
@@ -861,13 +868,51 @@ async function submitAuth(){
   btn.disabled=true;btn.textContent='Chargement...';
   try{
     const res=await fetch(`/api/auth?action=${modalMode}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-    const data=await res.json();if(!res.ok){showModalErr(data.error||'Erreur');return;}
+    const data=await res.json();
+    if(!res.ok){
+      if(data.pending){
+        // Email not verified - show resend screen
+        document.getElementById('modal-overlay').innerHTML=`<div class="modal" style="text-align:center">
+          <div style="font-size:52px;margin-bottom:16px">📧</div>
+          <h2 style="margin-bottom:10px">Email non confirmé</h2>
+          <p style="color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px">
+            Confirmez votre email avant de vous connecter.<br>
+            <strong style="color:var(--text)">${email}</strong><br>
+            <span style="font-size:12px">Vérifiez aussi vos spams.</span>
+          </p>
+          <button class="btn-modal" onclick="resendVerify('${email}')" style="margin-bottom:10px">🔁 Renvoyer l'email</button><br>
+          <button onclick="openModal('login')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;text-decoration:underline">← Retour</button>
+        </div>`;
+        document.getElementById('modal-overlay').classList.add('visible');
+        return;
+      }
+      showModalErr(data.error||'Erreur');return;
+    }
+    if(data.pending){
+      // Registration success - show confirmation screen
+      document.getElementById('modal-overlay').innerHTML=`<div class="modal" style="text-align:center">
+        <div style="font-size:52px;margin-bottom:16px">📧</div>
+        <h2 style="margin-bottom:10px">Vérifiez votre email !</h2>
+        <p style="color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:24px">
+          Un email de confirmation a été envoyé à<br>
+          <strong style="color:var(--text)">${email}</strong><br>
+          <span style="font-size:12px">Pensez à vérifier vos spams.</span>
+        </p>
+        <button class="btn-modal" onclick="resendVerify('${email}')" style="margin-bottom:10px">🔁 Renvoyer l'email</button><br>
+        <button onclick="openModal('login')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;text-decoration:underline">J'ai confirmé → Se connecter</button>
+      </div>`;
+      document.getElementById('modal-overlay').classList.add('visible');
+      return;
+    }
     authToken=data.token;currentUser=data.user;localStorage.setItem('tc_token',authToken);closeModal();updateNavUser();
-    if(currentUser.profile){document.getElementById('pbc-wrap').style.display='flex';
-      document.getElementById('ig-profile-banner').style.display='flex';
-      document.getElementById('igpb-title').textContent=currentUser.profile.name+' — '+currentUser.profile.sector;document.getElementById('pbc-title').textContent=currentUser.profile.name;}
-  }catch{showModalErr('Erreur de connexion.');}
-  finally{btn.disabled=false;btn.textContent=modalMode==='register'?'Créer mon compte':'Se connecter';}
+    if(currentUser.profile){
+      const pbcWrap=document.getElementById('pbc-wrap');
+      if(pbcWrap) pbcWrap.style.display='flex';
+      const pbcTitle=document.getElementById('pbc-title');
+      if(pbcTitle) pbcTitle.textContent=currentUser.profile.name;
+    }
+  }catch(e){showModalErr('Erreur de connexion : '+e.message);}
+  finally{if(document.getElementById('btn-auth')){document.getElementById('btn-auth').disabled=false;document.getElementById('btn-auth').textContent=modalMode==='register'?'Créer mon compte':'Se connecter';}}
 }
 function showModalErr(msg){const el=document.getElementById('modal-err');el.textContent=msg;el.classList.add('visible');}
 
@@ -1291,6 +1336,8 @@ async function loadAccount(){
     document.getElementById('acc-credits').textContent = data.plan==='pro' ? 'Illimité' : (data.credits ?? 5) + ' / 5';
     document.getElementById('acc-since').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString('fr-FR') : '—';
     if(data.plan==='pro'){
+      const bs = document.getElementById('billing-section');
+      if(bs) bs.style.display = 'block';
       const ts = document.getElementById('team-section');
       if(ts) ts.style.display = 'block';
       if(data.teamOwner){
@@ -1617,6 +1664,26 @@ function resetSuggestions(){
   document.getElementById('sug-results').style.display='none';
   document.getElementById('sug-form').style.display='block';
   document.querySelectorAll('.ls').forEach(l=>l.classList.remove('active'));
+}
+
+async function openBillingPortal(){
+  if(!authToken){openModal('login');return;}
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = 'Chargement...';
+  try{
+    const res = await fetch('/api/checkout?action=portal',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken}
+    });
+    const data = await res.json();
+    if(data.url) window.location.href = data.url;
+    else throw new Error(data.error||'Erreur');
+  }catch(e){
+    alert('Erreur : '+e.message);
+    btn.disabled = false;
+    btn.textContent = 'Gérer mon abonnement →';
+  }
 }
 
 async function startCheckout(){

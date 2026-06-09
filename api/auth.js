@@ -100,16 +100,18 @@ export default async function handler(req, res) {
     await kvSet(`user:${id}`, user);
     await kvSet(`verify:${verifyToken}`, id);
 
+    let emailError = null;
     try {
       await sendVerificationEmail(id, verifyToken);
     } catch(e) {
       console.error('Email error:', e.message);
-      // On continue même si l'email échoue — on log mais on ne bloque pas
+      emailError = e.message;
     }
 
     return res.status(200).json({
       pending: true,
-      message: 'Un email de confirmation a été envoyé à ' + id + '. Vérifiez votre boîte mail.'
+      message: 'Un email de confirmation a été envoyé à ' + id + '. Vérifiez votre boîte mail.',
+      emailError: emailError // visible en dev pour debug
     });
   }
 
