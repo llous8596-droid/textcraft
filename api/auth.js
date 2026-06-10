@@ -211,7 +211,8 @@ export default async function handler(req, res) {
       await sendVerificationEmail(id, verifyToken);
       return res.status(200).json({ message: 'Email renvoyé !' });
     } catch(e) {
-      return res.status(500).json({ error: 'Erreur envoi email' });
+      console.error('Brevo error:', e.message);
+      return res.status(500).json({ error: 'Erreur envoi email : ' + e.message });
     }
   }
 
